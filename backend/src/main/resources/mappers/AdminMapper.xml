@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = 接口的全限定符 -->
+<mapper namespace="com.TianHan.mapper.AdminMapper">
+
+    <select id="queryAll" resultType="com.TianHan.pojo.Admin">
+        select * from admins
+    </select>
+
+    <!-- 查询使用 select标签
+            id = 方法名
+            resultType = 返回值类型
+            标签内编写SQL语句
+     -->
+
+    <!--- int insert(Admin admin);
+    int update(Admin admin);
+    int delete(Integer id);
+    Admin selectById(Integer id);
+
+    List<Admin> selectAll();-->
+    <!--主键回显-->
+    <insert id="insert" useGeneratedKeys="false" keyProperty="uid" keyColumn="uid">
+        <!--注意SQL语句加括号-->
+        INSERT INTO admins (username,password,nickname,gender,occupation,avatar) VALUES (#{username},#{password},#{nickname},#{gender},#{occupation},#{avatar})
+    </insert>
+
+    <update id="update">
+        <!--注意SQL语句加括号-->
+        UPDATE admins SET username = #{username}, nickname = #{nickname}, gender = #{gender}, occupation = #{occupation}, avatar = #{avatar} WHERE uid = #{uid}
+    </update>
+
+    <delete id="deleteById">
+        <!--注意SQL语句加括号-->
+        DELETE FROM admins WHERE uid = #{uid}
+    </delete>
+
+    <select id="selectById" resultType="com.TianHan.pojo.Admin">
+        SELECT * FROM admins where uid = #{uid}
+    </select>
+
+    <select id="selectByUsername" resultType="com.TianHan.pojo.Admin">
+        SELECT * FROM admins where username = #{username}
+    </select>
+
+    <select id="selectAll" resultType="com.TianHan.pojo.Admin">
+        SELECT * FROM admins
+        <where>
+            <if test="username != null and username != ''">username like '%${username}%'</if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,29 @@
+import { createRouter, createWebHistory } from 'vue-router'
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', redirect: '/login'},
+    { path: '/home', meta: { title: '首页' }, component: () => import('@/views/HomePage.vue'), children: [
+      // { path: 'home', name: 'home', meta: { title: '首页' }, component: () => import('@/views/Home.vue')},
+    { path: 'about', name: 'about', meta: { title: '关于' }, component: () => import('@/views/About.vue')},
+    { path: 'profile', name: 'profile', meta: { title: '个人中心' }, component: () => import('@/views/Profile.vue')},
+    { path: 'password', name: 'password', meta: { title: '修改密码' }, component: () => import('@/views/Password.vue')},
+    { path: 'user', name: 'user', meta: { title: '用户数据展示' }, component: () => import('@/views/UserDataShow.vue')},
+    { path: 'admin', name: 'admin', meta: { title: '管理员数据展示' }, component: () => import('@/views/AdminDataShow.vue')},
+    { path: 'immortal', name: 'immortal', meta: { title: '神仙数据展示' }, component: () => import('@/views/ImmortalDataShow.vue')},
+    { path: 'dataAnalysis', name: 'dataAnalysis', meta: { title: '数据展示' }, component: () => import('@/views/DataAnalysis.vue')},
+    { path: 'article', name: 'article', meta: { title: '文章数据展示' }, component: () => import('@/views/ArticleDataShow.vue')},
+    { path: 'department', name: 'department', meta: { title: '部门数据展示' }, component: () => import('@/views/DepartmentDataShow.vue')},
+    ]},
+    { path: '/login', name: 'login', meta: { title: '登录' }, component: () => import('@/views/Login.vue')},
+    { path: '/signup', name: 'signup', meta: { title: '注册' }, component: () => import('@/views/Signup.vue')},
+    { path: '/404', name: '404', meta: { title: '404' }, component: () => import('@/views/404.vue')},
+    { path: '/:pathMatch(.*)*', redirect: '/404' }
+  ]
+})
+router.beforeEach((to, from, next) => {
+	document.title = to.meta.title;
+	next();
+})
+export default router

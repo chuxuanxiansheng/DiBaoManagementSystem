@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = 接口的全限定符 -->
+<mapper namespace="com.TianHan.mapper.GodMapper">
+
+    <select id="queryAll" resultType="com.TianHan.pojo.God">
+        select * from gods
+    </select>
+
+    <!-- 查询使用 select标签
+            id = 方法名
+            resultType = 返回值类型
+            标签内编写SQL语句
+     -->
+
+    <!--- int insert(God gods);
+    int update(God gods);
+    int delete(Integer id);
+    God selectById(Integer id);
+
+    List<God> selectAll();-->
+    <!--主键回显-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        <!--注意SQL语句加括号-->
+        INSERT INTO gods (name, sex, status, description) VALUES (#{name}, #{sex}, #{status}, #{description})
+    </insert>
+
+    <insert id="insert2">
+        <!--注意SQL语句加括号-->
+        INSERT INTO gods (id, name, sex, status, description) VALUES (#{id}, #{name}, #{sex}, #{status}, #{description})
+    </insert>
+
+    <update id="update">
+        <!--注意SQL语句加括号-->
+        UPDATE gods SET name = #{name}, sex = #{sex}, status = #{status}, description = #{description} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        <!--注意SQL语句加括号-->
+        DELETE FROM gods WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultType="com.TianHan.pojo.God">
+        SELECT * FROM gods where id = #{id}
+    </select>
+
+    <select id="selectAll" resultType="com.TianHan.pojo.God">
+        SELECT * FROM gods
+        <where>
+            <if test="name != null and name != ''">name like '%${name}%'</if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = 接口的全限定符 -->
+<mapper namespace="com.TianHan.mapper.DepartmentMapper">
+
+    <select id="queryAll" resultType="com.TianHan.pojo.Department">
+        select * from departments
+    </select>
+
+    <!-- 查询使用 select标签
+            id = 方法名
+            resultType = 返回值类型
+            标签内编写SQL语句
+     -->
+
+    <!--- int insert(Department department);
+    int update(Department department);
+    int delete(Integer id);
+    Department selectById(Integer id);
+
+    List<Department> selectAll();-->
+    <!--主键回显-->
+    <insert id="insert" useGeneratedKeys="false" keyProperty="id" keyColumn="id">
+        <!--注意SQL语句加括号-->
+        INSERT INTO departments (name) VALUES (#{name})
+    </insert>
+
+    <update id="update">
+        <!--注意SQL语句加括号-->
+        UPDATE departments SET name = #{name} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        <!--注意SQL语句加括号-->
+        DELETE FROM departments WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultType="com.TianHan.pojo.Department">
+        SELECT * FROM departments where id = #{id}
+    </select>
+
+    <select id="selectByName" resultType="com.TianHan.pojo.Department">
+        SELECT * FROM departments where name = #{name}
+    </select>
+
+    <select id="selectAll" resultType="com.TianHan.pojo.Department">
+        SELECT * FROM departments
+        <where>
+            <if test="name != null and name != ''">name like '%${name}%'</if>
+        </where>
+    </select>
+
+</mapper>
