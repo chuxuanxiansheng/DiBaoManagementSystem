@@ -14,6 +14,4 @@ public interface DepartmentMapper {
     Department selectById(Integer id);
 
     List<Department> selectAll(Department department);
-
-    Department selectByname(String name);
 }

@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: '/', redirect: '/login'},
+    // { path: '/', redirect: '/login'},
+    { path: '/', redirect: '/dashboard'},
+    { path: '/dashboard', name: 'dashboard', meta: { title: '仪表盘' }, component: () => import('@/views/Dashboard.vue')},
     { path: '/home', meta: { title: '首页' }, component: () => import('@/views/HomePage.vue'), children: [
-      // { path: 'home', name: 'home', meta: { title: '首页' }, component: () => import('@/views/Home.vue')},
-    { path: 'about', name: 'about', meta: { title: '关于' }, component: () => import('@/views/About.vue')},
     { path: 'profile', name: 'profile', meta: { title: '个人中心' }, component: () => import('@/views/Profile.vue')},
     { path: 'password', name: 'password', meta: { title: '修改密码' }, component: () => import('@/views/Password.vue')},
     { path: 'user', name: 'user', meta: { title: '用户数据展示' }, component: () => import('@/views/UserDataShow.vue')},

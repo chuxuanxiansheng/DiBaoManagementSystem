@@ -9,4 +9,5 @@ public class Article {
     private String content;
     private String time;
     private int authorId;
+    private String author;
 }

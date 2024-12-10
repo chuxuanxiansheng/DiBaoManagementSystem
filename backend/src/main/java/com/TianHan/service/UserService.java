@@ -28,9 +28,6 @@ public class UserService {
     @Resource
     private UserMapper userMapper;
 
-    @Autowired
-    private JwtHelper jwtHelper;
-
     public List<User> findList() {
         List<User> users = userMapper.queryAll();
         log.info("查询全部数据:{}", users);
@@ -131,18 +128,6 @@ public class UserService {
         user.setDepartmentId(1);
         userMapper.insert(user);
     }
-
-//    public Account updatePassword(Account account) {
-//        Integer uid = account.getUid();
-//        User dbUser = userMapper.selectById(uid);
-//        if (dbUser == null) {
-//            throw new CustomException("500", "用户不存在");
-//        }
-//        String password = MD5Util.encrypt(account.getPassword());
-//        dbUser.setPassword(password);
-//        userMapper.update(dbUser);
-//        return dbUser;
-//    }
 
     public Result updatePassword(User user) {
         Integer uid = user.getUid();

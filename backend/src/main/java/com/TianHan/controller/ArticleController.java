@@ -22,14 +22,6 @@ public class ArticleController {
     @Autowired
     private ArticleMapper articleMapper;
 
-    @GetMapping("/list")
-    @ResponseBody
-    public Result getArticle(Integer authorId){
-        List<Article> articleList = articleService.findList(authorId);
-        log.info("查询的article数据为:{}",articleList);
-        return Result.success(articleList);
-    }
-
     @GetMapping("/selectById/{id}")
     @ResponseBody
     public Result getArticleById(@PathVariable("id") Integer id){

@@ -8,16 +8,10 @@
       </div>
       <div style="flex: 1"></div>
       <div style="display: flex; align-items: center; width: fit-content; cursor: pointer;">
-        <!--        <el-avatar :src="data?.user?.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'" alt-text="头像" style="width: 40px;height: 40px;border-radius: 50%;"/>-->
         <el-avatar :src="data.user.avatar || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'"
                    alt-text="头像" style="width: 40px;height: 40px;border-radius: 50%;"/>
         <span style="color: #eee;">{{ data.user.username }}</span>
       </div>
-      <!--      <el-dropdown-menu slot="dropdown">-->
-      <!--        <el-dropdown-item>个人信息</el-dropdown-item>-->
-      <!--        <el-dropdown-item>修改密码</el-dropdown-item>-->
-      <!--        <el-dropdown-item @click="logout">退出登录</el-dropdown-item>-->
-      <!--      </el-dropdown-menu>-->
     </header>
   </div>
   <!-- 头部结束 -->

@@ -6,7 +6,10 @@
 <mapper namespace="com.TianHan.mapper.ArticleMapper">
 
     <select id="queryAll" resultType="com.TianHan.pojo.Article">
-        select * from articles where authorId = #{authorId}
+        select title,articles.img,articles.description,articles.content, time, username as author from articles, users where articles.authorId = users.uid
+
+        <if test="title != null and title != ''"> and title like '%${title}%'</if>
+
     </select>
 
     <!-- 查询使用 select标签

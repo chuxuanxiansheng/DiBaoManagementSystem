@@ -69,12 +69,7 @@
             <el-radio label="男">男</el-radio>
             <el-radio label="女">女</el-radio>
           </el-radio-group>
-          <!-- <el-input-number style="width: 180px;" :min="18" :max="70" v-model="data.form.age" autocomplete="off"
-            placeholder="请输入年龄" /> -->
         </el-form-item>
-        <!-- <el-form-item label="地位">
-          <el-input v-model="data.form.status" autocomplete="off" placeholder="请输入地位" />
-        </el-form-item> -->
         <el-form-item label="职业" prop="occupation">
           <el-input :rows="3" type="textarea" v-model="data.form.occupation" autocomplete="off" placeholder="请输入职业" />
         </el-form-item>

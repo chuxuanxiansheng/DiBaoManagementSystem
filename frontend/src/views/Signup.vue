@@ -39,7 +39,6 @@ import { ElMessage } from 'element-plus';
 const validatePassword = (rule, value, callback) => {
     if (!value) {
         callback(new Error('请输入密码'))
-        return
     } else if (value.length < 6 || value.length > 20) {
         callback(new Error('密码长度在6到20个字符'))
     } else if (value !== data.form.password) {

@@ -4,13 +4,13 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import com.TianHan.pojo.Account;
+import com.TianHan.pojo.Article;
 import com.TianHan.pojo.User;
-import com.TianHan.service.AdminService;
 import com.TianHan.service.ArticleService;
 import com.TianHan.service.UserService;
 import com.TianHan.utils.AuthAccess;
 import com.TianHan.utils.Result;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -25,15 +25,13 @@ public class WebController {
 
     @Resource
     private UserService userService;
-    @Resource
-    private AdminService adminService;
 
     @Resource
     private ArticleService articleService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody User user){
-        if(StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getPassword())){
+    public Result login(@RequestBody User user) {
+        if (StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getPassword())) {
             return Result.error("500", "用户名或密码不能为空");
         }
         return userService.login(user);
@@ -42,12 +40,20 @@ public class WebController {
 
     @AuthAccess
     @PostMapping("/signup")
-    public Result signup(@RequestBody User user){
-        if(StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getPassword())){
+    public Result signup(@RequestBody User user) {
+        if (StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getPassword())) {
             return Result.error("500", "用户名或密码不能为空");
         }
         userService.signup(user);
         return Result.success();
+    }
+
+    @AuthAccess
+    @GetMapping("/show")
+    @ResponseBody
+    public Result getAllData(Article article, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
+        PageInfo<Article> articlePageInfo = articleService.findList(article, pageNum, pageSize);
+        return Result.success(articlePageInfo);
     }
 
     @PutMapping("/updatePassword")
@@ -56,7 +62,7 @@ public class WebController {
     }
 
     @GetMapping("/getBarData")
-    public Result getBarData(){
+    public Result getBarData() {
         Map<String, Object> map = new HashMap<>();
         List<User> userList = userService.getUserData();
         Set<String> departmentNameSet = userList.stream().map(User::getDepartmentName).collect(Collectors.toSet());
@@ -71,7 +77,7 @@ public class WebController {
     }
 
     @GetMapping("/getLineData")
-    public Result getLineData(){
+    public Result getLineData() {
 
         Map<String, Object> map = new HashMap<>();
 
@@ -93,7 +99,7 @@ public class WebController {
     }
 
     @GetMapping("/getPieData")
-    public Result getPieData(){
+    public Result getPieData() {
         List<Map<String, Object>> list = new ArrayList<>();
         List<User> userList = userService.getUserData();
         Set<String> departmentNameSet = userList.stream().map(User::getDepartmentName).collect(Collectors.toSet());

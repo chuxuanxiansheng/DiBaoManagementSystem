@@ -20,22 +20,11 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
-//        String token = request.getHeader("Authorization");
-//        if (token != null && token.startsWith("Bearer ")) {
-//            token = token.substring(7);
-//        }
-        //放行OPTIONS请求
-//        String method = request.getMethod();
-//        if ("OPTIONS".equals(method)) {
-//            return true;
-//        }
 
         String token = request.getHeader("token"); //从header中获取token
-        //System.out.println("token: " + token);
         if(StrUtil.isBlank(token)){
             token = request.getParameter("token"); //从参数中获取token
         }
-        //System.out.println("token2: " + token);
         //如果不是映射到方法直接通过
         if(handler instanceof HandlerMethod){
             AuthAccess authAccess = ((HandlerMethod) handler).getMethodAnnotation(AuthAccess.class);
@@ -43,7 +32,6 @@ public class JwtInterceptor implements HandlerInterceptor {
                 return true;
             }
         }
-        //System.out.println("handler: " + handler);
         if(StrUtil.isBlank(token)){
             throw new CustomException("401", "请登录");
         }

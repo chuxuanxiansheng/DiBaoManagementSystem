@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ArticleMapper {
 
-    List<Article> queryAll(Integer authorId);
+    List<Article> queryAll(Article article);
 
     int insert(Article article);
     int update(Article article);
