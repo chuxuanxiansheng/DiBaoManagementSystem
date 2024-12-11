@@ -18,6 +18,7 @@
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="title" label="标题" />
+      <el-table-column prop="categoryName" label="类别" />
       <el-table-column prop="img" label="封面">
         <template #default="scope">
           <el-image v-if="scope.row.img" :src="scope.row.img" :preview-src-list="[scope.row.img]" preview-teleported
@@ -49,6 +50,16 @@
         <el-form-item label="标题" prop="title" placeholder="请输入标题">
           <el-input v-model="data.form.title" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="类别" prop="categoryId">
+          <el-select v-model="data.form.categoryId" placeholder="请选择类别">
+            <el-option
+              v-for="category in categories"
+              :key="category.id"
+              :label="category.name"
+              :value="category.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="封面">
           <el-upload action="http://localhost:8080/files/upload"  :headers="{token: data.user.token}" :file-list="fileList" list-type="picture" :on-success="handleImgSuccess">
             <el-icon type="primary">上传封面</el-icon>
@@ -64,9 +75,6 @@
               :editorConfig="editorConfig" @onCreated="handleCreated" />
           </div>
         </el-form-item>
-<!--        <el-form-item label="发布时间">-->
-<!--          <el-input v-model="data.form.time" autocomplete="off" placeholder="请输入发布时间" />-->
-<!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -82,13 +90,13 @@
         <span class="dialog-footer">
           <el-button type="primary" @click="data.viewVisible = false">关闭</el-button>
         </span>
-        </template>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, reactive, ref } from 'vue';
+import { onBeforeUnmount, reactive, ref, onMounted } from 'vue';
 import { Search, Edit, Delete } from '@element-plus/icons-vue';
 import service from '@/utils/request';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -128,6 +136,22 @@ const data = reactive({
       { min: 2, max: 5000, message: '长度在 2 到 5000 个字符', trigger: 'blur' }
     ]
   }
+})
+
+const categories = ref([]) // 存储类别数据
+
+const loadCategories = async () => {
+  try {
+    const response = await service.get('/categories') // 假设有一个获取类别的接口
+    categories.value = response.data
+  } catch (error) {
+    console.error('获取类别失败:', error)
+  }
+}
+
+onMounted(() => {
+  loadCategories()
+  loadData()
 })
 
 /* wangEditor5 初始化开始 */

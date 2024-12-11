@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.TianHan.mapper.CommentMapper">
+    
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        c.id, c.article_id, c.user_id, c.content, c.create_time,
+        u.username, u.avatar
+    </sql>
+
+    <!-- 评论结果映射 -->
+    <resultMap id="CommentResultMap" type="com.TianHan.pojo.Comment">
+        <id property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 用户信息映射 -->
+        <result property="username" column="username"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+
+    <!-- 根据文章ID查询评论列表 -->
+    <select id="selectByArticleId" resultMap="CommentResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM comments c
+        LEFT JOIN users u ON c.user_id = u.uid
+        WHERE c.article_id = #{articleId}
+        ORDER BY c.create_time DESC
+    </select>
+   <!-- 插入新评论 -->
+    <insert id="insert" parameterType="com.TianHan.pojo.Comment" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comments (
+            article_id, 
+            user_id, 
+            content, 
+            create_time
+        )
+        VALUES (
+            #{articleId}, 
+            #{userId}, 
+            #{content}, 
+            NOW()
+        )
+    </insert>
+
+    <!-- 删除评论 -->
+    <delete id="deleteById">
+        DELETE FROM comments
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 获取文章评论数量 -->
+    <select id="getCommentCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comments
+        WHERE article_id = #{articleId}
+    </select>
+
+    <!-- 根据用户ID查询评论列表 -->
+    <select id="selectByUserId" resultMap="CommentResultMap">
+        SELECT 
+            <include refid="Base_Column_List"/>
+        FROM comments c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.user_id = #{userId}
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 批量删除评论 -->
+    <delete id="batchDelete">
+        DELETE FROM comments
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 更新评论内容 -->
+    <update id="updateContent">
+        UPDATE comments
+        SET content = #{content}
+        WHERE id = #{id}
+    </update>
+</mapper>

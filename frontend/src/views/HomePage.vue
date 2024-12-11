@@ -21,6 +21,10 @@
       <el-menu router :default-active="router.currentRoute.value.path" :default-openeds="['1']"
                class="el-menu-vertical-demo" background-color="#f0f2f5" text-color="#303133"
                active-text-color="#409eff">
+        <el-menu-item @click="goToDashboard" >
+          <el-icon><House /></el-icon>
+          返回首页
+        </el-menu-item>
         <el-menu-item index="/home/profile" v-if="data.user.occupation === '用户'">
           <el-icon>
             <Avatar/>
@@ -83,7 +87,9 @@ import {
   OfficeBuilding,
   Setting,
   SwitchButton,
+  House
 } from '@element-plus/icons-vue'
+
 import router from '@/router';
 
 const data = reactive({
@@ -94,6 +100,10 @@ const data = reactive({
 const logout = () => {
   localStorage.removeItem('grantedUser')
   location.href = '/login'
+}
+
+const goToDashboard = () => {
+  router.push('/dashboard')
 }
 
 const getUser = () => {
