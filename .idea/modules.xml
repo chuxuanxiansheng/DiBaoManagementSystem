@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Vue3-SpringBoot3-Demo.iml" filepath="$PROJECT_DIR$/.idea/Vue3-SpringBoot3-Demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend-cli.iml" filepath="$PROJECT_DIR$/frontend-cli.iml" />
     </modules>
   </component>
 </project>

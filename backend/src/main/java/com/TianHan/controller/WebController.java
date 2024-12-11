@@ -51,8 +51,14 @@ public class WebController {
     @AuthAccess
     @GetMapping("/show")
     @ResponseBody
-    public Result getAllData(Article article, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
-        PageInfo<Article> articlePageInfo = articleService.findList(article, pageNum, pageSize);
+    public Result getAllData(Article article, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "0")Integer categoryId ) {
+        PageInfo<Article> articlePageInfo= new PageInfo<>();
+        if(categoryId==0){
+         articlePageInfo = articleService.findList(article, pageNum, pageSize);}
+        else{
+        articlePageInfo = articleService.getArticlesByCategory(article,pageNum, pageSize, categoryId);
+        }
+
         return Result.success(articlePageInfo);
     }
 

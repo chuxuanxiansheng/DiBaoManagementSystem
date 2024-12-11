@@ -9,5 +9,9 @@ public class Article {
     private String content;
     private String time;
     private int authorId;
+    private int viewCount;
+    private int categoryId;
+    private int comment_count;
     private String author;
+    private String categoryName;
 }

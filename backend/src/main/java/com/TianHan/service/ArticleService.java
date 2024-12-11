@@ -31,6 +31,12 @@ public class ArticleService {
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
+    public PageInfo<Article>getArticlesByCategory(Article article,Integer pageNum, Integer pageSize,Integer categoryId){
+        PageHelper.startPage(pageNum, pageSize);
+        List<Article> articles = articleMapper.selectByCategory(categoryId, article.getTitle());
+        log.info("分页查询数据:{}", articles);
+        return PageInfo.of(articles);
+    }
 
     public Article findById(int id) {
         Article article = articleMapper.selectById(id);
@@ -71,5 +77,20 @@ public class ArticleService {
         }
         log.info("批量删除文章成功:{}", ids);
         return true;
+    }
+
+
+    public List<Article> getArticlesByCategory(Integer categoryId, String title) {
+        return articleMapper.selectByCategory(categoryId, title);
+    }
+
+
+    public List<Article> getHotArticles() {
+        return articleMapper.selectHotArticles();
+    }
+
+
+    public void incrementViewCount(Integer id) {
+        articleMapper.incrementViewCount(id);
     }
 }
