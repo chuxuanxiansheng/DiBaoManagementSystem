@@ -2,54 +2,156 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- namespace = 接口的全限定符 -->
 <mapper namespace="com.TianHan.mapper.ArticleMapper">
 
+    <!-- 基础列定义 -->
+    <sql id="Base_Column_List">
+        a.id, a.title, a.img, a.description, a.content, a.category_id,
+        a.view_count, 
+        (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
+        a.time, a.author_id
+    </sql>
+
     <select id="queryAll" resultType="com.TianHan.pojo.Article">
-        select title,articles.img,articles.description,articles.content, time, username as author from articles, users where articles.authorId = users.uid
-
-        <if test="title != null and title != ''"> and title like '%${title}%'</if>
-
+        SELECT 
+            a.id, a.title, a.img, a.description, a.content, a.category_id,
+            a.view_count, 
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
+            a.time, a.author_id,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        <where>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY a.id DESC
     </select>
 
-    <!-- 查询使用 select标签
-            id = 方法名
-            resultType = 返回值类型
-            标签内编写SQL语句
-     -->
-    <!--主键回显-->
-    <insert id="insert" useGeneratedKeys="false" keyProperty="id" keyColumn="id">
-        <!--注意SQL语句加括号-->
-        INSERT INTO articles (title,img,description,content, time, authorId) VALUES (#{title},#{img},#{description},#{content},#{time},#{authorId})
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO articles (
+            title, img, description, content, 
+            category_id, time, author_id,
+            view_count, comment_count
+        ) VALUES (
+            #{title}, #{img}, #{description}, #{content}, 
+            #{categoryId}, #{time}, #{authorId},
+            0, 0
+        )
     </insert>
 
     <update id="update">
-        <!--注意SQL语句加括号-->
-        UPDATE articles SET title = #{title}, img = #{img}, description = #{description}, content = #{content} WHERE id = #{id}
+        UPDATE articles 
+        SET 
+            title = #{title},
+            img = #{img},
+            description = #{description},
+            content = #{content},
+            category_id = #{categoryId}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteById">
-        <!--注意SQL语句加括号-->
         DELETE FROM articles WHERE id = #{id}
     </delete>
 
     <select id="selectById" resultType="com.TianHan.pojo.Article">
-        SELECT * FROM articles where id = #{id}
+        SELECT 
+            <include refid="Base_Column_List"/>,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        WHERE a.id = #{id}
     </select>
 
     <select id="selectByTitle" resultType="com.TianHan.pojo.Article">
-        SELECT * FROM articles where title = #{title}
+        SELECT 
+            <include refid="Base_Column_List"/>,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        WHERE a.title = #{title}
     </select>
 
     <select id="selectAll" resultType="com.TianHan.pojo.Article">
-        SELECT * FROM articles
+        SELECT 
+            <include refid="Base_Column_List"/>,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
         <where>
-            <if test="title != null and title != ''">title like '%${title}%'</if>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            AND a.author_id = #{authorId}
         </where>
-        where authorId = #{authorId}
     </select>
-    <select id="getArticleCountByDate">
-        SELECT COUNT(*) FROM articles WHERE time like '%${dateStr}%'
+
+    <select id="getArticleCountByDate" resultType="java.lang.Integer">
+        SELECT COUNT(*) 
+        FROM articles 
+        WHERE time LIKE CONCAT('%', #{dateStr}, '%')
     </select>
+
+    <select id="selectByCategory" resultType="com.TianHan.pojo.Article">
+        SELECT 
+            <include refid="Base_Column_List"/>,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        <where>
+            <if test="categoryId != null">
+                AND a.category_id = #{categoryId}
+            </if>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY a.time DESC
+    </select>
+    
+    <select id="selectHotArticles" resultType="com.TianHan.pojo.Article">
+        SELECT 
+            a.id, a.title, a.img, a.description, a.content, a.category_id,
+            a.view_count, 
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
+            a.time, a.author_id,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        ORDER BY a.view_count DESC 
+
+    </select>
+    
+    <update id="incrementViewCount">
+        UPDATE articles 
+        SET view_count = view_count + 1 
+        WHERE id = #{id}
+    </update>
+
+    <update id="incrementCommentCount">
+        UPDATE articles 
+        SET comment_count = comment_count + 1 
+        WHERE id = #{id}
+    </update>
+
+    <update id="decrementCommentCount">
+        UPDATE articles 
+        SET comment_count = comment_count - 1 
+        WHERE id = #{id}
+    </update>
 
 </mapper>

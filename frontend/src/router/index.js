@@ -19,7 +19,14 @@ const router = createRouter({
     { path: '/login', name: 'login', meta: { title: '登录' }, component: () => import('@/views/Login.vue')},
     { path: '/signup', name: 'signup', meta: { title: '注册' }, component: () => import('@/views/Signup.vue')},
     { path: '/404', name: '404', meta: { title: '404' }, component: () => import('@/views/404.vue')},
-    { path: '/:pathMatch(.*)*', redirect: '/404' }
+    { path: '/nearby-news', name: 'NearbyNews', component: () => import('@/views/NearbyNews.vue') },
+    { path: '/feedback', name: 'Feedback', component: () => import('@/views/Feedback.vue') },
+    { path: '/:pathMatch(.*)*', redirect: '/404' },
+    {
+      path: '/news/:id',
+      name: 'NewsDetail',
+      component: ()=>import('@/views/NewsDetail.vue')
+    }
   ]
 })
 router.beforeEach((to, from, next) => {

@@ -18,6 +18,9 @@ public class ArticleService {
     @Resource
     private ArticleMapper articleMapper;
 
+    @Resource
+    private CommentService commentService;
+
     public int addArticle(Article article) {
         article.setTime(DateUtil.now());
         int result = articleMapper.insert(article);
@@ -28,13 +31,36 @@ public class ArticleService {
     public PageInfo<Article> findList(Article article,Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.queryAll(article);
+        
+        for (Article art : articles) {
+            int commentCount = commentService.getCommentCount(art.getId());
+            System.out.println("评论数：" + commentCount);
+            art.setComment_count(commentCount);
+        }
+        
+        log.info("分页查询数据:{}", articles);
+        return PageInfo.of(articles);
+    }
+    public PageInfo<Article>getArticlesByCategory(Article article,Integer pageNum, Integer pageSize,Integer categoryId){
+        PageHelper.startPage(pageNum, pageSize);
+        List<Article> articles = articleMapper.selectByCategory(categoryId, article.getTitle());
+        
+        for (Article art : articles) {
+            int commentCount = commentService.getCommentCount(art.getId());
+            art.setComment_count(commentCount);
+        }
+        
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
 
     public Article findById(int id) {
         Article article = articleMapper.selectById(id);
-        log.info("查询id为{}的数据:{}", id, article);
+        if (article != null) {
+            int commentCount = commentService.getCommentCount(article.getId());
+            article.setComment_count(commentCount);
+            log.info("查询id为{}的数据:{}, 评论数:{}", id, article, commentCount);
+        }
         return article;
     }
 
@@ -71,5 +97,25 @@ public class ArticleService {
         }
         log.info("批量删除文章成功:{}", ids);
         return true;
+    }
+
+
+    public List<Article> getArticlesByCategory(Integer categoryId, String title) {
+        return articleMapper.selectByCategory(categoryId, title);
+    }
+
+
+    public List<Article> getHotArticles() {
+        List<Article> hotArticles = articleMapper.selectHotArticles();
+        for (Article article : hotArticles) {
+            int commentCount = commentService.getCommentCount(article.getId());
+            article.setComment_count(commentCount);
+        }
+        return hotArticles;
+    }
+
+
+    public void incrementViewCount(Integer id) {
+        articleMapper.incrementViewCount(id);
     }
 }
