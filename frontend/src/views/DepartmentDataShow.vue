@@ -17,6 +17,7 @@
     <el-table :data="data.tableData" border style="width: 100%" highlight-current-row
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column prop="id" label="部门ID" />
       <el-table-column prop="name" label="部门名" />
       <el-table-column label="操作" width="140">
         <template #default="scope">

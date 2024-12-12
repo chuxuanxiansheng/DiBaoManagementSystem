@@ -52,4 +52,8 @@
         </where>
     </select>
 
+    <select id="selectIdByName" resultType="Integer">
+        SELECT id FROM departments WHERE name = #{name}
+    </select>
+
 </mapper>

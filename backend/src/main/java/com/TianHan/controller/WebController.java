@@ -13,6 +13,7 @@ import com.TianHan.utils.Result;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -23,8 +24,12 @@ import java.util.stream.Collectors;
 @RestController
 public class WebController {
 
-    @Resource
-    private UserService userService;
+    private final UserService userService;
+
+    @Autowired
+    public WebController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Resource
     private ArticleService articleService;
@@ -45,6 +50,16 @@ public class WebController {
             return Result.error("500", "用户名或密码不能为空");
         }
         userService.signup(user);
+        return Result.success();
+    }
+
+    @AuthAccess
+    @PostMapping("/resetPassword")
+    public Result resetPassword(@RequestBody User user) {
+        if (StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getEmail())) {
+            return Result.error("500", "用户名或邮箱不能为空");
+        }
+        userService.resetPassword(user);
         return Result.success();
     }
 

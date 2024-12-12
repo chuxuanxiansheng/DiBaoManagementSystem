@@ -5,13 +5,11 @@ const router = createRouter({
   routes: [
     // { path: '/', redirect: '/login'},
     { path: '/', redirect: '/dashboard'},
-    { path: '/dashboard', name: 'dashboard', meta: { title: '仪表盘' }, component: () => import('@/views/Dashboard.vue')},
-    { path: '/home', meta: { title: '首页' }, component: () => import('@/views/HomePage.vue'), children: [
-    { path: 'profile', name: 'profile', meta: { title: '个人中心' }, component: () => import('@/views/Profile.vue')},
+    { path: '/dashboard', name: 'dashboard', meta: { title: '首页' }, component: () => import('@/views/Dashboard.vue')},
+    { path: '/home', meta: { title: '个人中心' }, component: () => import('@/views/HomePage.vue'), children: [
+    { path: 'profile', name: 'profile', meta: { title: '信息修改' }, component: () => import('@/views/Profile.vue')},
     { path: 'password', name: 'password', meta: { title: '修改密码' }, component: () => import('@/views/Password.vue')},
     { path: 'user', name: 'user', meta: { title: '用户数据展示' }, component: () => import('@/views/UserDataShow.vue')},
-    { path: 'admin', name: 'admin', meta: { title: '管理员数据展示' }, component: () => import('@/views/AdminDataShow.vue')},
-    { path: 'immortal', name: 'immortal', meta: { title: '神仙数据展示' }, component: () => import('@/views/ImmortalDataShow.vue')},
     { path: 'dataAnalysis', name: 'dataAnalysis', meta: { title: '数据展示' }, component: () => import('@/views/DataAnalysis.vue')},
     { path: 'article', name: 'article', meta: { title: '文章数据展示' }, component: () => import('@/views/ArticleDataShow.vue')},
     { path: 'department', name: 'department', meta: { title: '部门数据展示' }, component: () => import('@/views/DepartmentDataShow.vue')},

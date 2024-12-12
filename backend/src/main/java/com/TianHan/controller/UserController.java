@@ -6,6 +6,7 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.TianHan.mapper.UserMapper;
 import com.TianHan.pojo.User;
 import com.TianHan.service.UserService;
+import com.TianHan.utils.AuthAccess;
 import com.TianHan.utils.Result;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.ServletOutputStream;
@@ -62,12 +63,14 @@ public class UserController {
             return Result.error();
         }
     }
-
+    @AuthAccess
     @DeleteMapping("/delete/{uid}")
     @ResponseBody
-    public Result deleteUser(@PathVariable("uid") int uid) {
+    public Result deleteUser(@PathVariable("uid") String uid) {
+        // 这里的uid是字符串类型，需要转换成int类型
+        int uidInt = Integer.parseInt(uid);
         log.info("删除id为{}的用户", uid);
-        int result = userService.deleteUser(uid);
+        int result = userService.deleteUser(uidInt);
         if (result == 1) {
             log.info("删除成功");
             return Result.success();
@@ -76,11 +79,21 @@ public class UserController {
             return Result.error();
         }
     }
+    @AuthAccess
+    @DeleteMapping("/batchDelete")
+    public Result batchDeleteUser(@RequestBody List<Integer> uids){
+        for (int uid : uids) {
+            log.info("删除id为{}的用户", uid);
+            userService.deleteUser(uid);
+        }
+        return Result.success();
+    }
 
+    @AuthAccess
     @PutMapping("/update")
     @ResponseBody
     public Result updateUser(@RequestBody User user) {
-        int result = userService.updateUser(user);
+        int result = userService.updateUser(user,user.getDepartmentName());
         if (result == 1) {
             log.info("更新成功");
             return Result.success();
@@ -96,7 +109,7 @@ public class UserController {
         PageInfo<User> userPageInfo = userService.selectPage(user, pageNum, pageSize);
         return Result.success(userPageInfo);
     }
-
+    @AuthAccess
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws Exception {
         List<User> userList = userService.findList();
@@ -106,8 +119,11 @@ public class UserController {
 
         //自定义标题别名
         writer.addHeaderAlias("username", "用户名");
+        writer.addHeaderAlias("email", "邮箱");
+        writer.addHeaderAlias("img", "头像");
+        writer.addHeaderAlias("nickname", "昵称");
         writer.addHeaderAlias("gender", "性别");
-        writer.addHeaderAlias("occupation", "职业");
+        writer.addHeaderAlias("status", "职业");
         writer.addHeaderAlias("departmentName", "部门名称");
         //默认的，未添加alias的属性也会写出，如果想只写出加了别名的字段，可以调用此方法排除之
         writer.setOnlyAlias(true);
@@ -126,6 +142,7 @@ public class UserController {
         writer.close();
         out.close();
     }
+    @AuthAccess
     @PostMapping("/batchInsert")
     public Result batchInsert(MultipartFile file) throws Exception {
         //拿到输入流构建reader
@@ -134,8 +151,13 @@ public class UserController {
 
         //读取数据
         reader.addHeaderAlias("用户名", "username");
+        reader.addHeaderAlias("邮箱", "email");
+        reader.addHeaderAlias("头像", "img");
+        reader.addHeaderAlias("昵称", "nickname");
         reader.addHeaderAlias("性别", "gender");
-        reader.addHeaderAlias("职业", "occupation");
+        reader.addHeaderAlias("职业", "status");
+        reader.addHeaderAlias("部门名称", "departmentName");
+
         List<User> userList = reader.readAll(User.class);
 
 
@@ -144,17 +166,5 @@ public class UserController {
             userService.addUser(user);
         }
         return Result.success();
-    }
-
-    @DeleteMapping("/batchDelete")
-    public Result batchDeleteUser(@RequestBody List<Integer> ids){
-        boolean result = userService.batchDeleteUser(ids);
-        if(result){
-            log.info("删除成功");
-            return Result.success();
-        }else{
-            log.info("删除失败");
-            return Result.error();
-        }
     }
 }

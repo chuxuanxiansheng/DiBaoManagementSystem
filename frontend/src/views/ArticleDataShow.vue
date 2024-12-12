@@ -6,12 +6,20 @@
     <el-button type="primary" @click="resetData" style="margin-top: 10px;">重置</el-button>
   </div>
   <div class="card" style="margin: 5px;">
-    <el-button type="primary" @click="handleAdd" >
-      <Edit />新增文章
-    </el-button>
-    <el-button type="danger" @click="handleBatchDelete">
-      <Delete />批量删除
-    </el-button>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <el-button type="primary" @click="handleAdd">
+        <Edit />新增文章
+      </el-button>
+      <el-button type="danger" @click="handleBatchDelete">
+        <Delete />批量删除
+      </el-button>
+      <el-upload name="file" accept=".xls,.xlsx"  v-if="data.user.status==='管理员'"
+                 action=“http://localhost:8080/article/batchInsert” :show-file-list="false" :on-success="batchInsertSuccess">
+        <el-button type="info">导入</el-button>
+        <div style="margin: 10px;">请选择要导入的Excel文件</div>
+      </el-upload>
+      <el-button  v-if="data.user.status==='管理员'" type="success" @click="handleExportClick">导出</el-button>
+    </div>
   </div>
   <div class="card" style="margin: 5px;">
     <el-table :data="data.tableData" stripe style="width: 100%" highlight-current-row
@@ -26,9 +34,14 @@
         </template>
       </el-table-column>
       <el-table-column prop="description" label="描述" show-overflow-tooltip />
+      <el-table-column prop="viewCount" label="浏览数量" />
+      <el-table-column prop="comment_count" label="评论数量" />
       <el-table-column label="内容">
         <template #default="scope">
-          <el-button type="text" @click="view(scope.row.content)">查看内容</el-button>
+          <div style="display: flex; flex-direction: column;  ">
+            <el-button type="text" @click="view(scope.row.content) " style="margin-right: 10px;">查看内容</el-button>
+            <el-button type="text" @click="viewDetails(scope.row.id)" style="margin-right: 20px;">查看详情</el-button>
+          </div>
         </template>
       </el-table-column>
       <el-table-column prop="time" label="发布时间" />
@@ -198,7 +211,7 @@ const loadData = () => {
 loadData()
 
 const resetData = () => {
-  data.name = null
+  data.title = null
   loadData()
 }
 
@@ -294,6 +307,30 @@ const update = () => { //修改的对象有id
   })
 }
 
+const batchInsertSuccess = (res) => {
+  if (res.code === "200") {
+    ElMessage.success('导入成功')
+    data.formVisible = false
+    loadData()
+  } else {
+    ElMessage.error(res.msg)
+  }
+}
+
+const handleExportClick = () => {
+  //下载流文件，不是JSON文件// 根据当前用户的 ID 导出文章
+  const authorId =data.user.uid ; // 获取当前用户的 Id
+  window.open(`http://localhost:8080/article/exportWithAuthorId?authorId=${authorId}`)
+  //打开流链接，浏览器帮忙下载
+}
+
+const viewDetails = (id) => {
+  // 跳转到文章详情页面
+  window.location.href = `/news/${id}`; // 根据路由配置修改为 /news/:id
+}
+
 </script>
 
-<style scoped></style>
+<style scoped>
+/* 之前的样式可以恢复或删除 */
+</style>

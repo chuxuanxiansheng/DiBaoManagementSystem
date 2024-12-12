@@ -11,10 +11,13 @@
       <!-- 登录状态 -->
       <div class="panel-login">
         <template v-if="isLoggedIn">
-          <el-avatar :src="user.avatar"
-                     alt-text="头像" style="width: 40px;height: 40px;border-radius: 50%;"/>
-          <el-button type="text" @click="goToProfile">个人中心</el-button>
-          <el-button type="text" @click="logout">退出登录</el-button>
+          <div class="user-controls">
+            <el-avatar :src="user.avatar"
+                       alt-text="头像" style="width: 40px;height: 40px;border-radius: 50%;"/>
+            <el-button type="text" @click="goToNewsHome">返回主页</el-button>
+            <el-button type="text" @click="goToProfile">个人中心</el-button>
+            <el-button type="text" @click="logout">退出登录</el-button>
+          </div>
         </template>
         <el-button v-else type="primary" @click="goToLogin">登录</el-button>
       </div>
@@ -56,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import service from '@/utils/request'
 import { Search } from '@element-plus/icons-vue'
@@ -79,15 +82,29 @@ const LogoInfo = ref([
   { letter: 'o', color: '#e7d0d6' }
 ])
 
-// 打印用户信息，查看avatar的实际值
+// 修改用户信息处理逻辑
 const userInfo = JSON.parse(localStorage.getItem('grantedUser') || '{}')
-console.log('用户信息:', userInfo)
-console.log('头像路径:', userInfo.avatar)
 
-// 确保头像路径以斜杠开头
+// 添加处理头像URL的方法
+const getAvatarUrl = (avatar) => {
+  if (!avatar) return 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+  if (avatar.startsWith('http')) return avatar
+  return `http://localhost:8080/files/download/${avatar}`
+}
+
+// 确保头像路径正确
 const user = ref({
   ...userInfo,
-  avatar: userInfo.avatar ? `/${userInfo.avatar}` : 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+  avatar: getAvatarUrl(userInfo.avatar)
+})
+
+const updateDocumentTitle = (title) => {
+  document.title = title ? `${title} - 邸报` : '邸报'
+}
+
+// 监听news对象的变化
+watch(() => news.value.title, (newTitle) => {
+  updateDocumentTitle(newTitle)
 })
 
 const fetchNewsDetail = async () => {
@@ -95,6 +112,9 @@ const fetchNewsDetail = async () => {
   try {
     const response = await service.get(`/article/selectById/${newsId}`)
     news.value = response.data
+    // 更新页面标题
+    updateDocumentTitle(news.value.title)
+    
     // 确保图片路径正确
     if (news.value.img && !news.value.img.startsWith('http')) {
       news.value.img = `/${news.value.img}`;
@@ -117,7 +137,13 @@ const fetchComments = async () => {
 }
 
 const submitComment = async () => {
-  if (!newComment.value.trim()) return
+  if (!newComment.value.trim()) {
+    ElMessage({
+      message: '评论内容不能为空',
+      type: 'warning'
+    })
+    return
+  }
 
   const user = JSON.parse(localStorage.getItem('grantedUser') || '{}')
   const commentData = {
@@ -128,10 +154,21 @@ const submitComment = async () => {
 
   try {
     await service.post('/article/comment', commentData)
-    newComment.value = ''
-    fetchComments() // 重新获取评论列表
+    ElMessage({
+      message: '评论发布成功',
+      type: 'success'
+    })
+    newComment.value = '' // 清空评论框
+    await Promise.all([
+      fetchComments(), // 重新获取评论列表
+      fetchNewsDetail() // 重新获取文章信息以更新评论数
+    ])
   } catch (error) {
     console.error('提交评论失败:', error)
+    ElMessage({
+      message: '评论发布失败，请稍后重试',
+      type: 'error'
+    })
   }
 }
 
@@ -349,5 +386,16 @@ onMounted(() => {
 
 .back-button:hover {
   background-color: #66b1ff;
+}
+
+.panel-login {
+  display: flex;
+  align-items: center;
+}
+
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* 控制元素之间的间距 */
 }
 </style> 

@@ -33,15 +33,25 @@
           <router-link to="/signup">注册</router-link>
         </div>
         <div style="text-decoration: none; color: #666; font-size: 14px; margin-bottom: 20px;">
-          <router-link to="/reset-password">忘记密码</router-link>
+          <el-button type="info" @click="clearForgetPasswordForm">忘记密码?</el-button>
         </div>
       </div>
     </div>
-    <el-dialog title="忘记密码" v-model="data.viewVisible" width="50%" :close-on-click-modal="false" destroy-on-close>
-      <div class="editor-content-view" style="padding: 20px" v-html="data.content"></div>
+    <el-dialog title="忘记密码" v-model="data.formForgetPasswordVisible" width="50%" :close-on-click-modal="false" destroy-on-close>
+      <el-form :model="data.formForgetPasswordRef" label-width="80px" style="padding-right: 20px;">
+        <el-form-item label="用户名">
+          <el-input v-model="data.formForgetPasswordRef.username" size="large" autocomplete="off"
+                    placeholder="请输入用户名" prefix-icon="User"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="data.formForgetPasswordRef.email" size="large" autocomplete="off" placeholder="请输入邮箱"
+                    prefix-icon="Notebook"></el-input>
+        </el-form-item>
+      </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="primary" @click="data.viewVisible = false">关闭</el-button>
+          <el-button type="primary" @click="data.formForgetPasswordVisible = false">取消</el-button>
+          <el-button type="primary" @click="handleForgetPassword">确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -50,8 +60,8 @@
 
 <script setup>
 
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import {ref, reactive, computed} from 'vue'
+import {useRouter} from 'vue-router'
 import service from '@/utils/request';
 import ValidCode from '@/components/ValidCode.vue';
 
@@ -62,6 +72,11 @@ const data = reactive({
   dialogVisible: false,
   formVisible: false,
   viewVisible: false,
+  formForgetPasswordVisible: false,
+  formForgetPasswordRef: {
+    username: '',
+    email: '',
+  },
 });
 // Reactive data
 const user = reactive({
@@ -76,14 +91,14 @@ let code = ref('');
 // Form validation rules
 const rules = reactive({
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
+    {required: true, message: '请输入用户名', trigger: 'blur'}
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
+    {required: true, message: '请输入密码', trigger: 'blur'}
   ],
   validCode: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { validator: validateCode, trigger: 'blur' }
+    {required: true, message: '请输入验证码', trigger: 'blur'},
+    {validator: validateCode, trigger: 'blur'}
   ]
 });
 
@@ -108,6 +123,7 @@ function login() {
       service.post('/login', user).then(res => {
         if (res.code === '200') {
           localStorage.setItem('grantedUser', JSON.stringify(res.data));
+
           router.push('/home');
         } else {
           ElMessage.error('登录失败，请检查用户名或密码');
@@ -121,6 +137,26 @@ function login() {
 function getCode(newCode) {
   code.value = newCode.toLowerCase();
 }
+
+const clearForgetPasswordForm = () => {
+  data.formForgetPasswordRef.username = '';
+  data.formForgetPasswordRef.email = '';
+  data.formForgetPasswordVisible = true;
+}
+
+const handleForgetPassword = () => {
+  service.post('/resetPassword', data.formForgetPasswordRef).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('密码已发送至邮箱，请注意查收。');
+      ElMessage.success('重置成功！重置后的密码为123456。');
+      data.formForgetPasswordVisible = false;
+    } else {
+      ElMessage.error('邮箱错误或用户名不存在');
+    }
+  });
+}
+
+
 </script>
 
 <style scoped>
