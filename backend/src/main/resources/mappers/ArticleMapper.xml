@@ -12,6 +12,14 @@
 
     </select>
 
+    <select id="selectAllWithAuthor" resultType="com.TianHan.pojo.Article">
+        select title,articles.img,articles.description,articles.content, time, username as author from articles, users where articles.authorId = users.uid
+    </select>
+
+    <select id="selectAllWithAuthorId" resultType="com.TianHan.pojo.Article">
+        select title,img,description,content, time, authorId from articles
+    </select>
+
     <!-- 查询使用 select标签
             id = 方法名
             resultType = 返回值类型
@@ -25,7 +33,7 @@
 
     <update id="update">
         <!--注意SQL语句加括号-->
-        UPDATE articles SET title = #{title}, img = #{img}, description = #{description}, content = #{content} WHERE id = #{id}
+        UPDATE articles SET title = #{title}, img = #{img}, description = #{description}, content = #{content}, time = #{time}, authorId = #{authorId} WHERE id = #{id}
     </update>
 
     <delete id="deleteById">
@@ -42,11 +50,9 @@
     </select>
 
     <select id="selectAll" resultType="com.TianHan.pojo.Article">
-        SELECT * FROM articles
-        <where>
-            <if test="title != null and title != ''">title like '%${title}%'</if>
-        </where>
-        where authorId = #{authorId}
+        SELECT * FROM articles where authorId = #{authorId}
+        <if test="title != null and title != ''"> and title like '%${title}%'</if>
+
     </select>
     <select id="getArticleCountByDate">
         SELECT COUNT(*) FROM articles WHERE time like '%${dateStr}%'

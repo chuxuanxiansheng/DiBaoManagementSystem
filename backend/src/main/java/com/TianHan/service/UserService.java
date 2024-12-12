@@ -3,8 +3,10 @@ package com.TianHan.service;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.TianHan.exception.CustomException;
+import com.TianHan.mapper.DepartmentMapper;
 import com.TianHan.mapper.UserMapper;
 import com.TianHan.pojo.Account;
+import com.TianHan.pojo.Department;
 import com.TianHan.pojo.User;
 import com.TianHan.utils.JwtHelper;
 import com.TianHan.utils.MD5Util;
@@ -28,6 +30,9 @@ public class UserService {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private DepartmentMapper departmentMapper;
+
     public List<User> findList() {
         List<User> users = userMapper.queryAll();
         log.info("查询全部数据:{}", users);
@@ -35,7 +40,7 @@ public class UserService {
     }
 
     public List<User> getUserData() {
-        List<User> users = userMapper.selectAll(null);
+        List<User> users = userMapper.selectAll();
         log.info("查询全部数据:{}", users);
         return users;
     }
@@ -59,11 +64,18 @@ public class UserService {
         if (dbUser != null) {
             throw new CustomException("500", "用户已存在");
         }
+
+        Department department = departmentMapper.selectByName(user.getDepartmentName());
+        user.setDepartmentId(department.getId());
+
+        if (StrUtil.isBlank(user.getEmail())) {
+            user.setEmail("user" + RandomUtil.randomNumbers(6) + "@example.com");
+        }
         if (StrUtil.isBlank(user.getPassword())) {
-            user.setPassword("123456");
+            user.setPassword(MD5Util.encrypt("123456"));
         }
         if (StrUtil.isBlank(user.getUsername())) {
-            user.setUsername("user");
+            user.setNickname("用户" + RandomUtil.randomString(6));
         }
         if (StrUtil.isBlank(user.getNickname())) {
             user.setNickname("用户");
@@ -71,8 +83,14 @@ public class UserService {
         if (StrUtil.isBlank(user.getGender())) {
             user.setGender("男");
         }
-        if (StrUtil.isBlank(user.getOccupation())) {
-            user.setOccupation("用户");
+        if (StrUtil.isBlank(user.getStatus())) {
+            user.setStatus("用户");
+        }
+        if (StrUtil.isBlank(user.getAvatar())) {
+            user.setAvatar("https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png");
+        }
+        if (user.getDepartmentId() == null) {
+            user.setDepartmentId(1);
         }
         int result = userMapper.insert(user);
         log.info("新增用户成功:{}", user);
@@ -80,7 +98,17 @@ public class UserService {
     }
 
     public int updateUser(User user) {
-        int result = userMapper.update(user);
+        String username = user.getUsername();
+        User dbUser = userMapper.selectByUsername(username);
+        if (dbUser == null) {
+            throw new CustomException("500", "用户不存在");
+        }
+        dbUser.setEmail(user.getEmail());
+        dbUser.setNickname(user.getNickname());
+        dbUser.setGender(user.getGender());
+        dbUser.setAvatar(user.getAvatar());
+        //dbUser.setDepartmentId(user.getDepartmentId());
+        int result = userMapper.update(dbUser);
         log.info("更新用户成功:{}", user);
         return result;
     }
@@ -89,6 +117,18 @@ public class UserService {
         int result = userMapper.deleteById(uid);
         log.info("删除id为{}的用户成功", uid);
         return result;
+    }
+
+    public boolean batchDeleteUser(List<Integer> uids) {
+        for (Integer uid : uids) {
+            int result = this.deleteUser(uid);
+            if (result == 0) {
+                log.error("删除id为{}的用户失败", uid);
+                return false;
+            }
+        }
+        log.info("批量删除用户成功:{}", uids);
+        return true;
     }
 
     public Result login(User user) {
@@ -123,7 +163,7 @@ public class UserService {
         user.setPassword(MD5Util.encrypt(user.getPassword()));
         user.setNickname("用户" + RandomUtil.randomString(6));
         user.setGender("男");
-        user.setOccupation("用户");
+        user.setStatus("用户");
         user.setAvatar("https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png");
         user.setDepartmentId(1);
         userMapper.insert(user);
@@ -141,15 +181,17 @@ public class UserService {
         return Result.success(dbUser);
     }
 
-    public boolean batchDeleteUser(List<Integer> uids) {
-        for (int uid : uids) {
-            int result = this.deleteUser(uid);
-            if (result == 0) {
-                log.error("删除id为{}的用户失败", uid);
-                return false;
-            }
+    public void resetPassword(User user) {
+        String username = user.getUsername();
+        User dbUser = userMapper.selectByUsername(username);
+        if (dbUser == null) {
+            throw new CustomException("500", "用户不存在");
         }
-        log.info("批量删除用户成功:{}", uids);
-        return true;
+        if (!user.getEmail().equals(dbUser.getEmail())) {
+            throw new CustomException("500", "邮箱错误");
+        }
+        String password = MD5Util.encrypt("123456");
+        dbUser.setPassword(password);
+        userMapper.update(dbUser);
     }
 }

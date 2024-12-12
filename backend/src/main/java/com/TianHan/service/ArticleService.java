@@ -3,6 +3,7 @@ package com.TianHan.service;
 import cn.hutool.core.date.DateUtil;
 import com.TianHan.mapper.ArticleMapper;
 import com.TianHan.pojo.Article;
+import com.TianHan.pojo.User;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
@@ -71,5 +72,13 @@ public class ArticleService {
         }
         log.info("批量删除文章成功:{}", ids);
         return true;
+    }
+
+    public List<Article> findAllArticlesWithAuthorId() {
+        return articleMapper.selectAllWithAuthorId();
+    }
+
+    public List<Article> findAllArticlesWithAuthor() {
+        return articleMapper.selectAllWithAuthor();
     }
 }

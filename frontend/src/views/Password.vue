@@ -26,7 +26,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 const validatePassword = (rule, value, callback) => {
     if (value === '') {
         callback(new Error('密码不能为空!'));
-    } else if (value.length < 3 || value.length > 10) {
+    } else if (value?.length < 3 || value?.length > 10) {
         callback(new Error('密码长度在 3 到 10 个字符!'));
     } else if (value !== data.form.confirmNewPassword) {
         callback(new Error('两次输入的密码不一致!'));
@@ -51,9 +51,9 @@ const data = reactive({
             { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
         ],
         confirmNewPassword: [
-            { validator: validatePassword, trigger: 'blur' }
-            // { required: true, message: '请确认新密码', trigger: 'blur' },
-            // { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            { validator: validatePassword, trigger: 'blur' },
+            { required: true, message: '请确认新密码', trigger: 'blur' },
+            { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
         ]
     }
 })

@@ -3,9 +3,10 @@
     <div>
       <h1>文章数据展示</h1>
       <el-button type="primary" @click="handleLoginClick" style="margin-top: 10px;">登录</el-button>
+      <el-button type="primary" @click="handleExportClick" style="margin-top: 10px;">导出所有数据</el-button>
     </div>
     <el-input v-model="data.title" placeholder="请输入标题" :prefix-icon="Search" clearable style="margin-top: 10px; width: 300px;"></el-input>
-    <el-button type="primary" @click="getAllData" style="margin-top: 10px;">查询</el-button>
+    <el-button type="primary" @click="getAllData" style="margin-top: 10px; margin-left: 10px;">查询</el-button>
     <el-button type="primary" @click="resetData" style="margin-top: 10px;">重置</el-button>
   </div>
 
@@ -90,7 +91,7 @@ const getAllData = () => {
 getAllData()
 
 const resetData = () => {
-  data.name = null
+  data.title = null
   getAllData()
 }
 
@@ -100,7 +101,14 @@ const handleSelectionChange = (rows) => {
 }
 
 const handleLoginClick = () => {
-  router.push('/login')
+  window.location.href = '/login'
+  //router.push('/login')
+}
+
+const handleExportClick = () => {
+  //下载流文件，不是JSON文件
+  window.open('http://localhost:8080/article/exportWithAuthor')
+  //打开流链接，浏览器帮忙下载
 }
 
 

@@ -9,7 +9,7 @@ public class Account {
     private String password;
     private String nickname;
     private String gender;
-    private String occupation;
+    private String status;
     private String avatar;
 
 }

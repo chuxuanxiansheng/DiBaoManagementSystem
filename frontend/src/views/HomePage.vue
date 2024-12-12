@@ -21,7 +21,7 @@
       <el-menu router :default-active="router.currentRoute.value.path" :default-openeds="['1']"
                class="el-menu-vertical-demo" background-color="#f0f2f5" text-color="#303133"
                active-text-color="#409eff">
-        <el-menu-item index="/home/profile" v-if="data.user.occupation === '用户'">
+        <el-menu-item index="/home/profile" v-if="data.user.status === '用户'">
           <el-icon>
             <Avatar/>
           </el-icon>
@@ -39,7 +39,7 @@
           </el-icon>
           新闻管理
         </el-menu-item>
-        <el-menu-item index="/home/department" v-if="data.user.occupation === '管理员'">
+        <el-menu-item index="/home/department" v-if="data.user.status === '管理员'">
           <el-icon>
             <OfficeBuilding/>
           </el-icon>
@@ -53,8 +53,8 @@
             </el-icon>
             <span>用户管理</span>
           </template>
-          <el-menu-item index="/home/admin" v-if="data.user.occupation === '管理员'">管理员页面</el-menu-item>
-          <el-menu-item index="/home/user" v-if="data.user.occupation === '管理员'">用户页面</el-menu-item>
+<!--          <el-menu-item index="/home/admin" v-if="data.user.status === '管理员'">管理员页面</el-menu-item>-->
+          <el-menu-item index="/home/user" v-if="data.user.status === '管理员'">用户页面</el-menu-item>
           <el-menu-item index="/home/password">密码修改页面</el-menu-item>
         </el-sub-menu>
         <el-menu-item @click="logout">

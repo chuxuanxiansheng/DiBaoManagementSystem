@@ -5,6 +5,9 @@ server:
     context-path: /
 ip: localhost
 spring:
+  mvc:
+    async:
+      request-timeout: 60000 # 例如，设置为60秒
   servlet:
     multipart:
       max-file-size: 100MB

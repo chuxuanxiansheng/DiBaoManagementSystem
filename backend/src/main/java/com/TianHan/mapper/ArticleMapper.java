@@ -16,4 +16,8 @@ public interface ArticleMapper {
     List<Article> selectAll(Article article);
 
     Integer getArticleCountByDate(String dateStr);
+
+    List<Article> selectAllWithAuthorId();
+
+    List<Article> selectAllWithAuthor();
 }

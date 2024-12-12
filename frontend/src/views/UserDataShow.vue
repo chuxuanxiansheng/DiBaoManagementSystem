@@ -23,6 +23,7 @@
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column prop="username" label="用户名" />
+      <el-table-column prop="email" label="邮箱" />
       <el-table-column prop="avatar" label="头像">
         <template #default="scope">
           <img v-if="scope.row.avatar" :src="scope.row.avatar"
@@ -31,7 +32,7 @@
       </el-table-column>
       <el-table-column prop="nickname" label="昵称" />
       <el-table-column prop="gender" label="性别" />
-      <el-table-column prop="occupation" label="职业" />
+      <el-table-column prop="status" label="权限等级" />
       <el-table-column prop="departmentName" label="部门" />
       <el-table-column label="操作" width="140">
         <template #default="scope">
@@ -51,14 +52,17 @@
         <el-form-item label="用户名" prop="username" placeholder="请输入名称">
           <el-input :disabled="data.form.uid" v-model="data.form.username" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="邮箱" prop="email" placeholder="请输入邮箱">
+          <el-input v-model="data.form.email" autocomplete="off" />
+        </el-form-item>
         <el-form-item label="部门">
-          <el-select style="width: 100%;" v-model="data.form.departmentId">
-            <el-option v-for="item in data.departments" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          <el-select style="width: 100%;" v-model="data.form.departmentName">
+            <el-option v-for="item in data.departments" :key="item.id" :label="item.name" :value="item.name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="头像">
           <el-upload action="http://localhost:8080/files/upload" :headers="{'token': data.user.token}" list-type="picture" :on-success="handleAvatarSuccess">
-            <el-icon type="primary">上传头像</el-icon>
+            <el-icon style="font-size: 20px; margin-right: 10px;" type="picture-outline"><Avatar /></el-icon>
           </el-upload>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname" placeholder="请输入昵称">
@@ -70,13 +74,13 @@
             <el-radio label="女">女</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="职业" prop="occupation">
-          <el-input :rows="3" type="textarea" v-model="data.form.occupation" autocomplete="off" placeholder="请输入职业" />
+        <el-form-item label="权限等级" prop="status">
+          <el-input :rows="3" type="textarea" v-model="data.form.status" autocomplete="off" placeholder="请输入权限等级" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="data.formVisible = false">取消</el-button>
+          <el-button type="primary" @click="data.formVisible = false">取消</el-button>
           <el-button type="primary" @click="handleSave">保存</el-button>
         </div>
       </template>
@@ -111,8 +115,8 @@ const data = reactive({
       { required: true, message: '请输入昵称', trigger: 'blur' },
       // { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
     ],
-    occupation: [
-      { required: true, message: '请输入职业', trigger: 'blur' },
+    status: [
+      { required: true, message: '请输入权限等级', trigger: 'blur' },
       // { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
     ]
   }
@@ -149,7 +153,7 @@ const loadData = () => {
 loadData()
 
 const resetData = () => {
-  data.name = null
+  data.username = null
   loadData()
 }
 
@@ -167,9 +171,9 @@ const handleAvatarSuccess = (res) => {
   data.form.avatar = res.data
 }
 
-const handleDelete = (id) => {
+const handleDelete = (uid) => {
   ElMessageBox.confirm('确认删除该条数据吗？', '确认删除', { type: 'warning' }).then(() => {
-    service.delete('/user/delete/' + id).then((res) => {
+    service.delete('/user/delete/' + uid).then((res) => {
       if (res.code === "200") {
         ElMessage.success('删除成功')
         loadData()
@@ -204,7 +208,6 @@ const handleBatchDelete = () => {
     })
   }).catch()
 }
-
 const handleSave = () => {
   formRef.value.validate((valid) => {
     if (valid) {
@@ -212,7 +215,7 @@ const handleSave = () => {
         update()
       } else {
         add()
-        //ElMessage.error('只能修改，不能新增')
+        // ElMessage.error('只能修改，不能新增')
       }
     } else {
       return false
@@ -221,6 +224,7 @@ const handleSave = () => {
 }
 
 const add = () => { //新增的对象没有id
+  console.log(data.form)
   service.post('/user/insert', data.form).then((res) => {
     if (res.code === "200") {
       ElMessage.success('新增成功')
