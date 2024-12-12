@@ -49,6 +49,16 @@ public class WebController {
     }
 
     @AuthAccess
+    @PostMapping("/resetPassword")
+    public Result resetPassword(@RequestBody User user) {
+        if (StrUtil.isBlank(user.getUsername()) || StrUtil.isBlank(user.getEmail())) {
+            return Result.error("500", "用户名或邮箱不能为空");
+        }
+        userService.resetPassword(user);
+        return Result.success();
+    }
+
+    @AuthAccess
     @GetMapping("/show")
     @ResponseBody
     public Result getAllData(Article article, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize,@RequestParam(defaultValue = "0")Integer categoryId ) {

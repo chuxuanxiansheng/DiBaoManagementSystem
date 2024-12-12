@@ -3,6 +3,7 @@ package com.TianHan.service;
 import cn.hutool.core.date.DateUtil;
 import com.TianHan.mapper.ArticleMapper;
 import com.TianHan.pojo.Article;
+import com.TianHan.pojo.User;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
@@ -31,25 +32,25 @@ public class ArticleService {
     public PageInfo<Article> findList(Article article,Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.queryAll(article);
-        
+
         for (Article art : articles) {
             int commentCount = commentService.getCommentCount(art.getId());
             System.out.println("评论数：" + commentCount);
             art.setComment_count(commentCount);
         }
-        
+
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
     public PageInfo<Article>getArticlesByCategory(Article article,Integer pageNum, Integer pageSize,Integer categoryId){
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.selectByCategory(categoryId, article.getTitle());
-        
+
         for (Article art : articles) {
             int commentCount = commentService.getCommentCount(art.getId());
             art.setComment_count(commentCount);
         }
-        
+
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
@@ -97,6 +98,14 @@ public class ArticleService {
         }
         log.info("批量删除文章成功:{}", ids);
         return true;
+    }
+
+    public List<Article> findAllArticlesWithAuthorId() {
+        return articleMapper.selectAllWithAuthorId();
+    }
+
+    public List<Article> findAllArticlesWithAuthor() {
+        return articleMapper.selectAllWithAuthor();
     }
 
 

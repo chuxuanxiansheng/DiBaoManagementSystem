@@ -1,14 +1,25 @@
 package com.TianHan.controller;
 
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
+import cn.hutool.poi.excel.ExcelWriter;
 import com.TianHan.mapper.DepartmentMapper;
 import com.TianHan.pojo.Department;
+import com.TianHan.pojo.User;
 import com.TianHan.service.DepartmentService;
+import com.TianHan.utils.AuthAccess;
 import com.TianHan.utils.Result;
 import com.github.pagehelper.PageInfo;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @CrossOrigin
@@ -82,5 +93,15 @@ public class DepartmentController {
     public Result selectPage( Department department, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize){
         PageInfo<Department> departmentPageInfo = departmentService.selectPage(department, pageNum, pageSize);
         return Result.success(departmentPageInfo);
+    }
+
+    @AuthAccess
+    @DeleteMapping("/batchDelete")
+    public Result batchDeleteUser(@RequestBody List<Integer> ids){
+        for (int id : ids) {
+            log.info("删除id为{}的部门", id);
+            departmentService.deleteDepartment(id);
+        }
+        return Result.success();
     }
 }

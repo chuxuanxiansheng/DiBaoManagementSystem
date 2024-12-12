@@ -10,6 +10,16 @@
                         <el-input size="large" type="text" v-model="data.form.username" placeholder="请输入用户名"
                             prefix-icon="User"></el-input>
                     </el-form-item>
+                  <el-form-item prop="email">
+                    <el-input size="large" type="text" v-model="data.form.email" placeholder="请输入邮箱"
+                              prefix-icon="Message"></el-input>
+                  </el-form-item>
+                  <el-form-item prop="gender">
+                    <el-select v-model="data.form.gender" placeholder="请选择性别" size="large" prefix-icon="Sort">
+                      <el-option label="男" value="男"></el-option>
+                      <el-option label="女" value="女"></el-option>
+                    </el-select>
+                  </el-form-item>
                     <el-form-item prop="password">
                         <el-input show-password size="large" type="password" v-model="data.form.password"
                             placeholder="请输入密码" prefix-icon="Lock"></el-input>
@@ -31,7 +41,7 @@
 </template>
 <script setup>
 import { reactive, ref } from 'vue'
-import { User, Lock } from "@element-plus/icons-vue"
+import {User, Lock, Sort} from "@element-plus/icons-vue"
 import service from '@/utils/request';
 import { ElMessage } from 'element-plus';
 
@@ -57,7 +67,11 @@ const data = reactive({
     rules: {
         username: [
             { required: true, message: '请输入用户名', trigger: 'blur' },
-            { min: 5, max: 20, message: '用户名长度在5到20个字符', trigger: 'blur' }
+            { min: 2, max: 20, message: '用户名长度在2到20个字符', trigger: 'blur' }
+        ],
+        email: [
+            { required: true, message: '请输入邮箱', trigger: 'blur' },
+            { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
         ],
         password: [
             { required: true, message: '请输入密码', trigger: 'blur' },

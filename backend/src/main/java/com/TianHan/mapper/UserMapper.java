@@ -13,6 +13,8 @@ public interface UserMapper {
     int deleteById(Integer uid);
     User selectById(Integer uid);
 
+    List<User> selectAll();
+
     List<User> selectAll(User user);
 
     User selectByUsername(String username);

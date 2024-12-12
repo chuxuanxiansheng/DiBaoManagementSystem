@@ -12,6 +12,7 @@ public interface DepartmentMapper {
     int update(Department department);
     int deleteById(Integer id);
     Department selectById(Integer id);
+    Department selectByName(String name);
 
     List<Department> selectAll(Department department);
 }

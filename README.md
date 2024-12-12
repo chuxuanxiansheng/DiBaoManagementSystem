@@ -55,37 +55,16 @@ USE tiandi;
 CREATE TABLE `users`  (
   `uid` INT NOT NULL AUTO_INCREMENT COMMENT '用户id',
   `username` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户登录名',
+  `email` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户邮箱',
   `password` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户登录密码密文',
   `nickname` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户昵称',
   `gender` VARCHAR(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户性别',
-  `occupation` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户职业',
+  `status` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户权限等级',
   `departmentId` INT NOT NULL COMMENT '部门ID',
   `avatar` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户头像',
   PRIMARY KEY (`uid`) USING BTREE,
   UNIQUE INDEX `username_unique`(`username`) USING BTREE
 ) ENGINE = INNODB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC; 
-
-SELECT * FROM `users`;
- 
-INSERT INTO `users` VALUES(1, "baozi", "qweasd", "包子", "男", "用户", 1);
-INSERT INTO `users` VALUES(2, "xiaolizi", "qweasd", "小李子", "男", "用户", 1);
- 
- CREATE TABLE `admins`  (
-  `uid` INT NOT NULL AUTO_INCREMENT COMMENT '管理员id',
-  `username` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员登录名',
-  `password` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员登录密码密文',
-  `nickname` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员昵称',
-  `gender` VARCHAR(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员性别',
-  `occupation` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '管理员职业',
-  `avatar` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户头像',
-  PRIMARY KEY (`uid`) USING BTREE,
-  UNIQUE INDEX `adminname_unique`(`adminname`) USING BTREE
-) ENGINE = INNODB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC; 
-
-SELECT * FROM admins;
-
-INSERT INTO `admins` VALUES(1, "dabaozi", "qweasd", "包子", "男", "管理员");
-INSERT INTO `admins` VALUES(2, "xiaolizi", "qweasd", "小李子", "男", "管理员");
 
 
 
@@ -96,10 +75,10 @@ img VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '封面',
 `description` VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '简介', 
 content LONGTEXT COLLATE utf8mb4_unicode_ci COMMENT '内容',
 TIME VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '发布时间', 
+authorId INT(11) NOT NULL COMMENT '作者ID',
 PRIMARY KEY(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='文章信息';
 
-SELECT * FROM articles;
 
 
 CREATE TABLE departments(
@@ -108,12 +87,7 @@ id INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
 PRIMARY KEY(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='部门信息';
 
-SELECT * FROM departments;
-
-INSERT INTO departments VALUES(1, "行政部");
-INSERT INTO departments VALUES(2, "财务部");
-INSERT INTO departments VALUES(3, "技术部");
-INSERT INTO departments VALUES(4, "后勤部");
-INSERT INTO departments VALUES(5, "法务部");
 ```
+
+
 

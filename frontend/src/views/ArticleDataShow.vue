@@ -12,6 +12,11 @@
     <el-button type="danger" @click="handleBatchDelete">
       <Delete />批量删除
     </el-button>
+    <el-upload style="margin-top: 10px;" name="file" accept=".xls,.xlsx" action="http://localhost:8080/article/batchInsert" :show-file-list="false" :on-success="batchInsertSuccess">
+      <el-button type="info">导入</el-button>
+      <div style="margin: 10px;">请选择要导入的Excel文件</div>
+    </el-upload>
+    <el-button style="margin-top: 10px;" type="success" @click="handleExportClick">导出</el-button>
   </div>
   <div class="card" style="margin: 5px;">
     <el-table :data="data.tableData" stripe style="width: 100%" highlight-current-row
@@ -198,7 +203,7 @@ const loadData = () => {
 loadData()
 
 const resetData = () => {
-  data.name = null
+  data.title = null
   loadData()
 }
 
@@ -292,6 +297,22 @@ const update = () => { //修改的对象有id
       ElMessage.error(res.msg)
     }
   })
+}
+
+const batchInsertSuccess = (res) => {
+  if (res.code === "200") {
+    ElMessage.success('导入成功')
+    data.formVisible = false
+    loadData()
+  } else {
+    ElMessage.error(res.msg)
+  }
+}
+
+const handleExportClick = () => {
+  //下载流文件，不是JSON文件
+  window.open('http://localhost:8080/article/exportWithAuthorId')
+  //打开流链接，浏览器帮忙下载
 }
 
 </script>

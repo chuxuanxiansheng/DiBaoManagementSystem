@@ -42,8 +42,8 @@
           <el-carousel-item v-for="item in carouselData" :key="item.id">
             <div class="carousel-wrapper">
               <div class="carousel-image-container">
-                <img 
-                  :src="item.imageUrl" 
+                <img
+                  :src="item.imageUrl"
                   :alt="item.title"
                   class="carousel-image"
                 />
@@ -63,8 +63,8 @@
           <!-- 分类导航 -->
           <div class="category-nav">
             <el-radio-group v-model="currentCategory" @change="handleCategoryChange">
-              <el-radio-button v-for="category in categories" 
-                              :key="category.id" 
+              <el-radio-button v-for="category in categories"
+                              :key="category.id"
                               :label="category.id">
                 {{ category.name }}
               </el-radio-button>
@@ -73,9 +73,9 @@
 
           <!-- 新闻列表 -->
           <div class="news-list">
-            <div v-for="news in newsData" 
-                 :key="news.id" 
-                 class="news-item" 
+            <div v-for="news in newsData"
+                 :key="news.id"
+                 class="news-item"
                  @click="viewNews(news)">
               <img v-if="news.img" :src="news.img" class="news-image" alt="新闻图片">
               <div class="news-content">
@@ -193,6 +193,11 @@ const getAllData = () => {
 }
 getAllData()
 
+const resetData = () => {
+  data.title = null
+  getAllData()
+}
+
 const handleSelectionChange = (rows) => {
   // console.log(rows)
   data.ids = rows.map(item => item.id)
@@ -203,6 +208,15 @@ const isLoggedIn = ref(!!localStorage.getItem('grantedUser'))
 
 const goToLogin = () => {
   router.push('/login')
+const handleLoginClick = () => {
+  window.location.href = '/login'
+  //router.push('/login')
+}
+
+const handleExportClick = () => {
+  //下载流文件，不是JSON文件
+  window.open('http://localhost:8080/article/exportWithAuthor')
+  //打开流链接，浏览器帮忙下载
 }
 
 const goToProfile = () => {
@@ -349,7 +363,7 @@ const isRefreshing = ref(false)
 // 修改换一换按钮的点击处理
 const handleRefreshHot = async () => {
   if (isRefreshing.value) return
-  
+
   isRefreshing.value = true
   try {
     await getHotNews()
@@ -636,7 +650,7 @@ onMounted(() => {
   .news-list {
     grid-template-columns: 1fr;
   }
-  
+
   .news-item {
     margin-bottom: 15px;
   }
@@ -738,7 +752,7 @@ onMounted(() => {
   .news-item {
     flex-direction: column;
   }
-  
+
   .news-image {
     width: 100%;
     height: 200px;

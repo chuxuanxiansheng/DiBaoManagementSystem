@@ -26,6 +26,7 @@
           返回首页
         </el-menu-item>
         <el-menu-item index="/home/profile" v-if="data.user.occupation === '用户'">
+        <el-menu-item index="/home/profile" v-if="data.user.status === '用户'">
           <el-icon>
             <Avatar/>
           </el-icon>
@@ -43,7 +44,7 @@
           </el-icon>
           新闻管理
         </el-menu-item>
-        <el-menu-item index="/home/department" v-if="data.user.occupation === '管理员'">
+        <el-menu-item index="/home/department" v-if="data.user.status === '管理员'">
           <el-icon>
             <OfficeBuilding/>
           </el-icon>
