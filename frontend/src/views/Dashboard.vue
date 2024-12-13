@@ -1,4 +1,42 @@
 <template>
+<<<<<<<<< Temporary merge branch 1
+  <div class="card" style="margin: 5px;">
+    <div>
+      <h1>文章数据展示</h1>
+      <el-button type="primary" @click="handleLoginClick" style="margin-top: 10px;">登录</el-button>
+      <el-button type="primary" @click="handleExportClick" style="margin-top: 10px;">导出所有数据</el-button>
+    </div>
+    <el-input v-model="data.title" placeholder="请输入标题" :prefix-icon="Search" clearable style="margin-top: 10px; width: 300px;"></el-input>
+    <el-button type="primary" @click="getAllData" style="margin-top: 10px; margin-left: 10px;">查询</el-button>
+    <el-button type="primary" @click="resetData" style="margin-top: 10px;">重置</el-button>
+  </div>
+
+  <div class="card" style="margin: 5px;">
+    <el-table :data="data.tableData" stripe style="width: 100%" highlight-current-row
+              @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column prop="title" label="标题" />
+      <el-table-column prop="img" label="封面">
+        <template #default="scope">
+          <el-image v-if="scope.row.img" :src="scope.row.img" :preview-src-list="[scope.row.img]" preview-teleported
+                    style="display:block; width: 40px; height: 40px; border-radius: 50%;" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="description" label="描述" show-overflow-tooltip />
+      <el-table-column label="内容">
+        <template #default="scope">
+          <el-button type="text" @click="view(scope.row.content)">查看内容</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column prop="time" label="发布时间" />
+      <el-table-column prop="author" label="作者" />
+    </el-table>
+    <el-pagination @size-change="getAllData" @prev-click="getAllData" @next-click="getAllData" @current-change="getAllData"
+                   v-model:current-page="data.pageNum" v-model:page-size="data.pageSize" :page-sizes="[5, 10, 15, 20]" background
+                   layout="total, sizes, prev, pager, next, jumper" :total=data.total />
+  </div>
+=========
+>>>>>>>>> Temporary merge branch 2
   <div>
     <div class="header">
       <div class="content">
@@ -42,8 +80,8 @@
           <el-carousel-item v-for="item in carouselData" :key="item.id">
             <div class="carousel-wrapper">
               <div class="carousel-image-container">
-                <img
-                  :src="item.imageUrl"
+                <img 
+                  :src="item.imageUrl" 
                   :alt="item.title"
                   class="carousel-image"
                 />
@@ -63,8 +101,8 @@
           <!-- 分类导航 -->
           <div class="category-nav">
             <el-radio-group v-model="currentCategory" @change="handleCategoryChange">
-              <el-radio-button v-for="category in categories"
-                              :key="category.id"
+              <el-radio-button v-for="category in categories" 
+                              :key="category.id" 
                               :label="category.id">
                 {{ category.name }}
               </el-radio-button>
@@ -73,9 +111,9 @@
 
           <!-- 新闻列表 -->
           <div class="news-list">
-            <div v-for="news in newsData"
-                 :key="news.id"
-                 class="news-item"
+            <div v-for="news in newsData" 
+                 :key="news.id" 
+                 class="news-item" 
                  @click="viewNews(news)">
               <img v-if="news.img" :src="news.img" class="news-image" alt="新闻图片">
               <div class="news-content">
@@ -127,24 +165,37 @@ import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import Masonry from 'vue-masonry-css'
 
+
 import '@wangeditor/editor/dist/css/style.css'
 import '@/assets/view.css'
+import router from "@/router/index.js";
 
 import carousel1 from '../assets/1.png'
 import carousel2 from '../assets/2.png'
 import carousel3 from '../assets/3.png'
 
-const router = useRouter()
-
-const LogoInfo = ref([
-  { letter: 'D', color: '#f44336' },
-  { letter: 'i', color: '#3688f4' },
-  { letter: 'B', color: '#e7f436' },
-  { letter: 'a', color: '#88f436' },
-  { letter: 'o', color: '#e7d0d6' }
-])
-
-
+const LogoInfo=ref([{
+      letter:'D',
+      color:'#f44336'
+    },
+      {
+        letter:'i',
+        color:'#3688f4'
+      },
+      {
+        letter:'B',
+        color:'#e7f436'
+      },
+      {
+        letter:'a',
+        color:'#88f436'
+      },
+      {
+        letter:'o',
+        color:'#e7d0d6'
+      }
+    ]
+);
 const formRef = ref(null)
 
 const data = reactive({
@@ -162,11 +213,54 @@ const data = reactive({
   content: null
 })
 
+const view = (content) => {
+  data.content = content
+  data.viewVisible = true
+}
+const getAllData = () => {
+  service.get('/show', {
+    params: {
+      pageNum: data.pageNum,
+      pageSize: data.pageSize,
+      title: data.title
+    }
+  }).then(res => {
+    data.tableData = res.data.list
+    data.total = res.data.total
+  })
+}
+getAllData()
+
+<<<<<<<<< Temporary merge branch 1
+const resetData = () => {
+  data.title = null
+  getAllData()
+}
+
+=========
+>>>>>>>>> Temporary merge branch 2
+const handleSelectionChange = (rows) => {
+  // console.log(rows)
+  data.ids = rows.map(item => item.id)
+}
+
+<<<<<<<<< Temporary merge branch 1
+const handleLoginClick = () => {
+  window.location.href = '/login'
+  //router.push('/login')
+}
+
+const handleExportClick = () => {
+  //下载流文件，不是JSON文件
+  window.open('http://localhost:8080/article/exportWithAuthor')
+  //打开流链接，浏览器帮忙下载
+=========
 const user = reactive(JSON.parse(localStorage.getItem('grantedUser') || '{}'))
 const isLoggedIn = ref(!!localStorage.getItem('grantedUser'))
 
 const goToLogin = () => {
   router.push('/login')
+>>>>>>>>> Temporary merge branch 2
 }
 
 const goToProfile = () => {
@@ -178,30 +272,10 @@ const logout = () => {
   location.href = '/login'
 }
 
-const goToNewsHome = () => {
-  // 重置所有状态并刷新列表
-  currentCategory.value = 'all'
-  pageNum.value = 1
-  data.title = null
-  newsData.value = []
-  getNewsList()
-}
+// import carousel1 from '@/assets/1.png'
+// import carousel2 from '@/assets/2.png'
+// import carousel3 from '@/assets/3.png'
 
-const goToCategory = () => {
-  currentCategory.value = 'all'
-  pageNum.value = 1
-  newsData.value = []
-  getNewsList()
-}
-
-const goToAbout = () => {
-  ElMessage({
-    message: '欢迎使用新闻管理系统！本系统提供新闻浏览、分类查询、评论互动等功能。',
-    type: 'success',
-    duration: 5000,
-    showClose: true
-  })
-}
 
 // 轮播图数据
 const carouselData = ref([
@@ -211,18 +285,19 @@ const carouselData = ref([
     imageUrl: carousel1
   },
   {
-    id: 2,
-    title: '科技创新',
+    id:2,
+    title:'科技创新',
     imageUrl: carousel2
   },
   {
-    id: 3,
-    title: 'Cursor ai',
+    id:3,
+    title:'Cursor ai',
     imageUrl: carousel3
   }
+  // ... 其他轮播图数据
 ])
 
-// 分类相关的数据
+// 新增分类相关的数据
 const categories = ref([
   { id: 'all', name: '全部' },
   { id: 1, name: '教育' },
@@ -234,15 +309,15 @@ const categories = ref([
   { id: 7, name: '科技' },
   { id: 8, name: '财经' }
 ])
-
 const currentCategory = ref('all')
+
 const newsData = ref([])
 const hotNews = ref([])
 const pageNum = ref(1)
 const pageSize = ref(10)
 const hasMore = ref(true)
 
-// 获取新闻列表
+// 修改获取新闻列表方法，添加分类参数
 const getNewsList = async () => {
   try {
     const res = await service.get('/show', {
@@ -270,7 +345,7 @@ const getNewsList = async () => {
   }
 }
 
-// 分类切换
+// 添加分类切换方法
 const handleCategoryChange = (categoryId) => {
   currentCategory.value = categoryId
   pageNum.value = 1
@@ -310,6 +385,7 @@ const getHotNews = async () => {
   try {
     const res = await service.get('/article/hot')
     if (res.code === '200') {
+      // 如果返回的数据超过8条，随机选择8条
       if (res.data && res.data.length > 8) {
         const shuffled = [...res.data].sort(() => 0.5 - Math.random())
         hotNews.value = shuffled.slice(0, 8)
@@ -331,7 +407,7 @@ const isRefreshing = ref(false)
 // 修改换一换按钮的点击处理
 const handleRefreshHot = async () => {
   if (isRefreshing.value) return
-
+  
   isRefreshing.value = true
   try {
     await getHotNews()
@@ -358,9 +434,30 @@ const handleImageLoad = () => {
   imageLoaded.value = true
 }
 
+// 添加新的路由方法
+const goToCategory = () => {
+  // 直接滚动到分类区域
+  const categorySection = document.querySelector('.category-nav')
+  if (categorySection) {
+    categorySection.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+const goToAbout = () => {
+  ElMessage({
+    message: '欢迎使用新闻管理系统！本系统提供新闻浏览、分类查询、评论互动等功能。',
+    type: 'success',
+    duration: 5000,
+    showClose: true
+  })
+}
+
 onMounted(() => {
   getNewsList()
   getHotNews()
+  // if (!isLoggedIn.value) {
+  //   router.push('/login')
+  // }
 })
 </script>
 
@@ -597,7 +694,7 @@ onMounted(() => {
   .news-list {
     grid-template-columns: 1fr;
   }
-
+  
   .news-item {
     margin-bottom: 15px;
   }
@@ -675,17 +772,12 @@ onMounted(() => {
 
 /* 添加分类导航样式 */
 .category-nav {
-  position: sticky;
-  top: 80px;
-  z-index: 998;
   background: #fff;
   padding: 15px;
   margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .category-nav .el-radio-group {
@@ -704,7 +796,7 @@ onMounted(() => {
   .news-item {
     flex-direction: column;
   }
-
+  
   .news-image {
     width: 100%;
     height: 200px;

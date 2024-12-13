@@ -29,27 +29,28 @@ public class ArticleService {
         return result;
     }
 
-    public PageInfo<Article> findList(Article article, Integer pageNum, Integer pageSize) {
+    public PageInfo<Article> findList(Article article,Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.queryAll(article);
-
+        
         for (Article art : articles) {
             int commentCount = commentService.getCommentCount(art.getId());
+            System.out.println("评论数：" + commentCount);
             art.setComment_count(commentCount);
         }
-
+        
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
     public PageInfo<Article>getArticlesByCategory(Article article,Integer pageNum, Integer pageSize,Integer categoryId){
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.selectByCategory(categoryId, article.getTitle());
-
+        
         for (Article art : articles) {
             int commentCount = commentService.getCommentCount(art.getId());
             art.setComment_count(commentCount);
         }
-
+        
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
@@ -67,10 +68,6 @@ public class ArticleService {
     public PageInfo<Article> selectPage(Article article, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Article> articles = articleMapper.selectAll(article);
-        for (Article art : articles) {
-            int commentCount = commentService.getCommentCount(art.getId());
-            art.setComment_count(commentCount);
-        }
         log.info("分页查询数据:{}", articles);
         return PageInfo.of(articles);
     }
@@ -103,21 +100,14 @@ public class ArticleService {
         return true;
     }
 
-    public List<Article> findAllArticlesWithAuthorId(Integer authorId) {
-        List<Article> articles= articleMapper.selectAllWithAuthorId(authorId);
-
-
-        for (Article art : articles) {
-            int commentCount = commentService.getCommentCount(art.getId());
-            art.setComment_count(commentCount);
-        }
-        return articles;
+<<<<<<<<< Temporary merge branch 1
+    public List<Article> findAllArticlesWithAuthorId() {
+        return articleMapper.selectAllWithAuthorId();
     }
 
     public List<Article> findAllArticlesWithAuthor() {
         return articleMapper.selectAllWithAuthor();
-    }
-
+=========
 
     public List<Article> getArticlesByCategory(Integer categoryId, String title) {
         return articleMapper.selectByCategory(categoryId, title);
@@ -136,5 +126,6 @@ public class ArticleService {
 
     public void incrementViewCount(Integer id) {
         articleMapper.incrementViewCount(id);
+>>>>>>>>> Temporary merge branch 2
     }
 }

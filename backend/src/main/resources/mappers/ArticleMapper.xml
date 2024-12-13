@@ -2,21 +2,20 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- namespace = 接口的全限定符 -->
 <mapper namespace="com.TianHan.mapper.ArticleMapper">
 
     <!-- 基础列定义 -->
     <sql id="Base_Column_List">
         a.id, a.title, a.img, a.description, a.content, a.category_id,
-        a.view_count,
+        a.view_count, 
         (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
         a.time, a.author_id
     </sql>
 
     <select id="queryAll" resultType="com.TianHan.pojo.Article">
-        SELECT
+        SELECT 
             a.id, a.title, a.img, a.description, a.content, a.category_id,
-            a.view_count,
+            a.view_count, 
             (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
             a.time, a.author_id,
             u.username as author,
@@ -31,35 +30,14 @@
         </where>
         ORDER BY a.id DESC
     </select>
-    <select id="queryAllNoWhere" resultType="com.TianHan.pojo.Article">
-        SELECT
-        a.id, a.title, a.img, a.description, a.content, a.category_id,
-        a.view_count,
-        (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
-        a.time, a.author_id,
-        u.username as author,
-        c.name as categoryName
-        FROM articles a
-        LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
 
-        ORDER BY a.id DESC
-    </select>
-
+<<<<<<<<< Temporary merge branch 1
     <select id="selectAllWithAuthor" resultType="com.TianHan.pojo.Article">
         select title,articles.img,articles.description,articles.content, time, username as author from articles, users where articles.authorId = users.uid
     </select>
 
     <select id="selectAllWithAuthorId" resultType="com.TianHan.pojo.Article">
-        SELECT
-            <include refid="Base_Column_List"/>,
-            u.username as author,
-            c.name as categoryName
-        FROM articles a
-        LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
-        WHERE a.author_id = #{authorId}
-        ORDER BY a.time DESC
+        select title,img,description,content, time, authorId from articles
     </select>
 
     <!-- 查询使用 select标签
@@ -68,37 +46,45 @@
             标签内编写SQL语句
      -->
     <!--主键回显-->
-
-    <insert id="insert" parameterType="com.TianHan.pojo.Article">
-        INSERT INTO articles (title, img, description, content, category_id, time, author_id, view_count, comment_count)
-        VALUES (#{title}, #{img}, #{description}, #{content}, #{categoryId}, #{time}, #{authorId}, 0, 0)
+    <insert id="insert" useGeneratedKeys="false" keyProperty="id" keyColumn="id">
+        <!--注意SQL语句加括号-->
+        INSERT INTO articles (title,img,description,content, time, authorId) VALUES (#{title},#{img},#{description},#{content},#{time},#{authorId})
     </insert>
 
     <update id="update">
-        UPDATE articles
-        SET
+        <!--注意SQL语句加括号-->
+        UPDATE articles SET title = #{title}, img = #{img}, description = #{description}, content = #{content}, time = #{time}, authorId = #{authorId} WHERE id = #{id}
+=========
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO articles (
+            title, img, description, content, 
+            category_id, time, author_id,
+            view_count, comment_count
+        ) VALUES (
+            #{title}, #{img}, #{description}, #{content}, 
+            #{categoryId}, #{time}, #{authorId},
+            0, 0
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE articles 
+        SET 
             title = #{title},
             img = #{img},
             description = #{description},
             content = #{content},
-            category_id = #{categoryId},
-            department_id = (SELECT id FROM departments WHERE name = #{departmentName})
+            category_id = #{categoryId}
         WHERE id = #{id}
+>>>>>>>>> Temporary merge branch 2
     </update>
 
     <delete id="deleteById">
         DELETE FROM articles WHERE id = #{id}
     </delete>
 
-    <delete id="batchDelete">
-        DELETE FROM articles WHERE id IN
-        <foreach item="id" collection="list" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
-
     <select id="selectById" resultType="com.TianHan.pojo.Article">
-        SELECT
+        SELECT 
             <include refid="Base_Column_List"/>,
             u.username as author,
             c.name as categoryName
@@ -109,7 +95,7 @@
     </select>
 
     <select id="selectByTitle" resultType="com.TianHan.pojo.Article">
-        SELECT
+        SELECT 
             <include refid="Base_Column_List"/>,
             u.username as author,
             c.name as categoryName
@@ -120,7 +106,15 @@
     </select>
 
     <select id="selectAll" resultType="com.TianHan.pojo.Article">
-        SELECT
+<<<<<<<<< Temporary merge branch 1
+        SELECT * FROM articles where authorId = #{authorId}
+        <if test="title != null and title != ''"> and title like '%${title}%'</if>
+
+    </select>
+    <select id="getArticleCountByDate">
+        SELECT COUNT(*) FROM articles WHERE time like '%${dateStr}%'
+=========
+        SELECT 
             <include refid="Base_Column_List"/>,
             u.username as author,
             c.name as categoryName
@@ -133,16 +127,17 @@
             </if>
             AND a.author_id = #{authorId}
         </where>
+>>>>>>>>> Temporary merge branch 2
     </select>
 
     <select id="getArticleCountByDate" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM articles
+        SELECT COUNT(*) 
+        FROM articles 
         WHERE time LIKE CONCAT('%', #{dateStr}, '%')
     </select>
 
     <select id="selectByCategory" resultType="com.TianHan.pojo.Article">
-        SELECT
+        SELECT 
             <include refid="Base_Column_List"/>,
             u.username as author,
             c.name as categoryName
@@ -159,11 +154,11 @@
         </where>
         ORDER BY a.time DESC
     </select>
-
+    
     <select id="selectHotArticles" resultType="com.TianHan.pojo.Article">
-        SELECT
+        SELECT 
             a.id, a.title, a.img, a.description, a.content, a.category_id,
-            a.view_count,
+            a.view_count, 
             (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
             a.time, a.author_id,
             u.username as author,
@@ -171,38 +166,26 @@
         FROM articles a
         LEFT JOIN users u ON a.author_id = u.uid
         LEFT JOIN categories c ON a.category_id = c.sort
-        ORDER BY a.view_count DESC
-        limit 100
-    </select>
+        ORDER BY a.view_count DESC 
 
+    </select>
+    
     <update id="incrementViewCount">
-        UPDATE articles
-        SET view_count = view_count + 1
+        UPDATE articles 
+        SET view_count = view_count + 1 
         WHERE id = #{id}
     </update>
 
     <update id="incrementCommentCount">
-        UPDATE articles
-        SET comment_count = comment_count + 1
+        UPDATE articles 
+        SET comment_count = comment_count + 1 
         WHERE id = #{id}
     </update>
 
     <update id="decrementCommentCount">
-        UPDATE articles
-        SET comment_count = comment_count - 1
+        UPDATE articles 
+        SET comment_count = comment_count - 1 
         WHERE id = #{id}
     </update>
-
-    <select id="exportWithAuthorId" resultType="com.TianHan.pojo.Article">
-        SELECT * FROM articles WHERE author_id = #{authorId}
-    </select>
-
-    <select id="batchInsert" parameterType="java.util.List">
-        INSERT INTO articles (title, img, description, content, category_id, time, author_id, view_count, comment_count)
-        VALUES
-        <foreach item="article" collection="list" separator=",">
-            (#{article.title}, #{article.img}, #{article.description}, #{article.content}, #{article.categoryId}, #{article.time}, #{article.authorId}, 0, 0)
-        </foreach>
-    </select>
 
 </mapper>

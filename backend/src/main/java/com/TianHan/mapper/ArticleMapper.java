@@ -14,7 +14,7 @@ public interface ArticleMapper {
      * 查询所有文章（带条件）
      */
     List<Article> queryAll(Article article);
-    List<Article> queryAll();
+
     /**
      * 根据ID查询文章
      */
@@ -23,14 +23,43 @@ public interface ArticleMapper {
     /**
      * 查询所有文章（带条件）
      */
-    Integer update(Article article);
-    Integer deleteById(@Param("id")int id);
     List<Article> selectAll(Article article);
-    List<Article> selectAllWithAuthorId(Integer authorId);
+
+<<<<<<<<< Temporary merge branch 1
+    Integer getArticleCountByDate(String dateStr);
+
+    List<Article> selectAllWithAuthorId();
 
     List<Article> selectAllWithAuthor();
-    Integer getArticleCountByDate(String dateStr);
-    List<Article>selectHotArticles();
-    Integer incrementViewCount(@Param("id")Integer id);
-    List<Article> selectByCategory(Integer categoryId, String title);
+=========
+    /**
+     * 更新文章
+     */
+    int update(Article article);
+
+    /**
+     * 根据ID删除文章
+     */
+    int deleteById(@Param("id") Integer id);
+
+    /**
+     * 获取指定日期的文章数量
+     */
+    Integer getArticleCountByDate(@Param("dateStr") String dateStr);
+
+    /**
+     * 根据分类ID和标题查询文章
+     */
+    List<Article> selectByCategory(@Param("categoryId") Integer categoryId, @Param("title") String title);
+
+    /**
+     * 查询热门文章
+     */
+    List<Article> selectHotArticles();
+
+    /**
+     * 增加文章浏览量
+     */
+    void incrementViewCount(@Param("id") Integer id);
+>>>>>>>>> Temporary merge branch 2
 }
