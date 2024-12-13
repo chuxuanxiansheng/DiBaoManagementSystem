@@ -14,12 +14,14 @@
           <div class="user-controls">
             <el-avatar :src="user.avatar"
                        alt-text="头像" style="width: 40px;height: 40px;border-radius: 50%;"/>
-            <el-button type="text" @click="goToNewsHome">返回主页</el-button>
+
+
             <el-button type="text" @click="goToProfile">个人中心</el-button>
             <el-button type="text" @click="logout">退出登录</el-button>
           </div>
         </template>
         <el-button v-else type="primary" @click="goToLogin">登录</el-button>
+        <el-button type="text" @click="goHome">返回首页</el-button>
       </div>
     </div>
   </div>
@@ -179,7 +181,10 @@ const formatTime = (time) => {
 const goToHome = () => {
   router.push('/');
 };
-
+// 新增返回首页的方法
+function goHome() {
+  router.push('/');
+}
 const goToProfile = () => {
   router.push('/home')
 }

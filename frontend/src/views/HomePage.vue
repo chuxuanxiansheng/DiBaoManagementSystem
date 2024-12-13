@@ -21,15 +21,14 @@
       <el-menu router :default-active="router.currentRoute.value.path" :default-openeds="['1']"
                class="el-menu-vertical-demo" background-color="#f0f2f5" text-color="#303133"
                active-text-color="#409eff">
-<<<<<<<<< Temporary merge branch 1
-        <el-menu-item index="/home/profile" v-if="data.user.status === '用户'">
-=========
+
+
+
         <el-menu-item @click="goToDashboard" >
           <el-icon><House /></el-icon>
           返回首页
         </el-menu-item>
-        <el-menu-item index="/home/profile" v-if="data.user.occupation === '用户'">
->>>>>>>>> Temporary merge branch 2
+        <el-menu-item index="/home/profile" v-if="data.user.status === '用户'">
           <el-icon>
             <Avatar/>
           </el-icon>
@@ -46,6 +45,12 @@
             <Document/>
           </el-icon>
           新闻管理
+        </el-menu-item>
+        <el-menu-item v-if="data.user.status === '管理员'" index="/home/allarticle">
+          <el-icon>
+            <Document/>
+          </el-icon>
+          所有新闻管理
         </el-menu-item>
         <el-menu-item index="/home/department" v-if="data.user.status === '管理员'">
           <el-icon>

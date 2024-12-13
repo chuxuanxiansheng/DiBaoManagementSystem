@@ -11,15 +11,14 @@
         (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
         a.time, a.author_id
     </sql>
-
-    <select id="queryAll" resultType="com.TianHan.pojo.Article">
-        SELECT 
-            a.id, a.title, a.img, a.description, a.content, a.category_id,
-            a.view_count, 
-            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
-            a.time, a.author_id,
-            u.username as author,
-            c.name as categoryName
+    <select id="selectAll" resultType="com.TianHan.pojo.Article">
+        SELECT
+        a.id, a.title, a.img, a.description, a.content, a.category_id,
+        a.view_count,
+        (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
+        a.time, a.author_id,
+        u.username as author,
+        c.name as categoryName
         FROM articles a
         LEFT JOIN users u ON a.author_id = u.uid
         LEFT JOIN categories c ON a.category_id = c.sort
@@ -30,31 +29,95 @@
         </where>
         ORDER BY a.id DESC
     </select>
+    <select id="queryAllp" resultType="com.TianHan.pojo.Article">
+        SELECT
+        a.id, a.title, a.img, a.description, a.content, a.category_id,
+        a.view_count,
+        (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as commentCount,
+        a.time, a.author_id,
+        u.username as author,
+        c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        <where>
 
-<<<<<<<<< Temporary merge branch 1
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="queryAll" resultType="com.TianHan.pojo.Article">
+        SELECT 
+            a.id, a.title, a.img, a.description, a.content, a.category_id,
+            a.view_count, 
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as commentCount,
+            a.time, a.author_id,
+            u.username as author,
+            c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        <where>
+            <if test="authorId != null or authorId != 0 " >
+                AND a.author_id = #{authorId}
+            </if>
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY a.id DESC
+    </select>
+
     <select id="selectAllWithAuthor" resultType="com.TianHan.pojo.Article">
-        select title,articles.img,articles.description,articles.content, time, username as author from articles, users where articles.authorId = users.uid
+        SELECT title, articles.img, articles.description, articles.content, time, username as author 
+        FROM articles, users 
+        WHERE articles.authorId = users.uid
     </select>
 
+    <!-- <select id="selectAllWithAuthorId" resultType="com.TianHan.pojo.Article">
+        SELECT title, img, description, content, time, author_id 
+        FROM articles 
+        WHERE author_id = #{authorId}
+    </select> -->
     <select id="selectAllWithAuthorId" resultType="com.TianHan.pojo.Article">
-        select title,img,description,content, time, authorId from articles
+        SELECT 
+            a.title, 
+            a.category_id,
+            a.author_id, 
+            u.username AS author, 
+            a.img, 
+            a.description, 
+            a.view_count, 
+             (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS commentCount,
+            a.content, 
+            a.time,
+        c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+        WHERE a.author_id = #{authorId}
     </select>
 
-    <!-- 查询使用 select标签
-            id = 方法名
-            resultType = 返回值类型
-            标签内编写SQL语句
-     -->
-    <!--主键回显-->
-    <insert id="insert" useGeneratedKeys="false" keyProperty="id" keyColumn="id">
-        <!--注意SQL语句加括号-->
-        INSERT INTO articles (title,img,description,content, time, authorId) VALUES (#{title},#{img},#{description},#{content},#{time},#{authorId})
-    </insert>
-
-    <update id="update">
-        <!--注意SQL语句加括号-->
-        UPDATE articles SET title = #{title}, img = #{img}, description = #{description}, content = #{content}, time = #{time}, authorId = #{authorId} WHERE id = #{id}
-=========
+    <select id="selectAllW" resultType="com.TianHan.pojo.Article">
+        SELECT 
+            a.title, 
+            a.category_id, 
+            a.author_id, 
+            u.username AS author, 
+            a.img, 
+            a.description, 
+            a.view_count, 
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS comment_count, 
+            a.content, 
+            a.time,
+        c.name as categoryName
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        LEFT JOIN categories c ON a.category_id = c.sort
+    </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO articles (
             title, img, description, content, 
@@ -63,7 +126,7 @@
         ) VALUES (
             #{title}, #{img}, #{description}, #{content}, 
             #{categoryId}, #{time}, #{authorId},
-            0, 0
+            #{viewCount}, 0
         )
     </insert>
 
@@ -76,7 +139,6 @@
             content = #{content},
             category_id = #{categoryId}
         WHERE id = #{id}
->>>>>>>>> Temporary merge branch 2
     </update>
 
     <delete id="deleteById">
@@ -105,30 +167,6 @@
         WHERE a.title = #{title}
     </select>
 
-    <select id="selectAll" resultType="com.TianHan.pojo.Article">
-<<<<<<<<< Temporary merge branch 1
-        SELECT * FROM articles where authorId = #{authorId}
-        <if test="title != null and title != ''"> and title like '%${title}%'</if>
-
-    </select>
-    <select id="getArticleCountByDate">
-        SELECT COUNT(*) FROM articles WHERE time like '%${dateStr}%'
-=========
-        SELECT 
-            <include refid="Base_Column_List"/>,
-            u.username as author,
-            c.name as categoryName
-        FROM articles a
-        LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
-        <where>
-            <if test="title != null and title != ''">
-                AND a.title LIKE CONCAT('%', #{title}, '%')
-            </if>
-            AND a.author_id = #{authorId}
-        </where>
->>>>>>>>> Temporary merge branch 2
-    </select>
 
     <select id="getArticleCountByDate" resultType="java.lang.Integer">
         SELECT COUNT(*) 
@@ -167,7 +205,6 @@
         LEFT JOIN users u ON a.author_id = u.uid
         LEFT JOIN categories c ON a.category_id = c.sort
         ORDER BY a.view_count DESC 
-
     </select>
     
     <update id="incrementViewCount">
@@ -187,5 +224,22 @@
         SET comment_count = comment_count - 1 
         WHERE id = #{id}
     </update>
+
+    <select id="selectByAuthorId" resultType="com.TianHan.pojo.Article">
+        SELECT 
+            a.title, 
+            a.category_id, 
+            a.author_id, 
+            u.username AS author, 
+            a.img, 
+            a.description, 
+            a.view_count, 
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS comment_count, 
+            a.content, 
+            a.time 
+        FROM articles a
+        LEFT JOIN users u ON a.author_id = u.uid
+        WHERE a.author_id = #{authorId}
+    </select>
 
 </mapper>

@@ -10,6 +10,9 @@
       <el-col :span="12" style="margin-bottom: 10px">
         <div class="card" style="padding: 20px; height: 400px;" id="pie"></div>
       </el-col>
+      <el-col :span="12" style="margin-bottom: 10px">
+        <div class="card" style="padding: 20px; height: 400px;" id="articleStats"></div>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -46,6 +49,7 @@ const barOption = {
     }
   ]
 };
+
 const lineOption = {
   title: {
     text: '近七天每日发文数量'
@@ -97,33 +101,72 @@ const pieOption = {
   ]
 };
 
-const data = reactive({
+const articleStatsOption = {
+  title: {
+    text: '我的文章统计'
+  },
+  tooltip: {},
+  legend: {
+    data: ['阅读量', '评论数']
+  },
+  xAxis: {
+    data: []
+  },
+  yAxis: {},
+  series: [
+    {
+      name: '阅读量',
+      type: 'bar',
+      data: [],
+      itemStyle: {
+        color: '#409eff'
+      }
+    },
+    {
+      name: '评论数',
+      type: 'bar',
+      data: [],
+      itemStyle: {
+        color: '#67c23a'
+      }
+    }
+  ]
+};
 
-});
+const data = reactive({});
 
 onMounted(() => {
   // 基于准备好的dom，初始化echarts实例
   const barChart = echarts.init(document.getElementById('bar'));
   service.get('/getBarData').then(res => {
-    //console.log(res.data);
     barOption.xAxis.data = res.data.department;
     barOption.series[0].data = res.data.count;
     barChart.setOption(barOption);
   });
+
   const lineChart = echarts.init(document.getElementById('line'));
   service.get('/getLineData').then(res => {
-    //console.log(res.data);
     lineOption.xAxis.data = res.data.date;
     lineOption.series[0].data = res.data.count;
     lineChart.setOption(lineOption);
   });
+
   const pieChart = echarts.init(document.getElementById('pie'));
   service.get('/getPieData').then(res => {
-    //console.log(res.data);
     pieOption.series[0].data = res.data;
     pieChart.setOption(pieOption);
   });
 
+  // 模拟数据
+  const simulatedData = {
+    titles: ['文章1', '文章2', '文章3', '文章4', '文章5'],
+  const articleStatsChart = echarts.init(document.getElementById('articleStats'));
+  service.get('/getArticleStats').then(res => {
+    articleStatsOption.xAxis.data = res.data.titles;
+    articleStatsOption.series[0].data = res.data.readCounts;
+    articleStatsOption.series[1].data = res.data.commentCounts;
+    articleStatsChart.setOption(articleStatsOption);
+  });
 });
 
 

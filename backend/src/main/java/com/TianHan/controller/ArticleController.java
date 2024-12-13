@@ -107,12 +107,20 @@ public class ArticleController {
         PageInfo<Article> articlePageInfo = articleService.selectPage(article, pageNum, pageSize);
         return Result.success(articlePageInfo);
     }
+    @GetMapping("/selectPageAll")
+    @ResponseBody
+    public Result selectPageAll(Article article, @RequestParam() Integer authorId, @RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize){
+        article.setAuthorId(authorId);
+        PageInfo<Article> articlePageInfo = articleService.selectPageAll(article, pageNum, pageSize);
+        return Result.success(articlePageInfo);
+    }
     @AuthAccess
     @GetMapping("/exportWithAuthorId")
     @ResponseBody
-    public void exportWithAuthorId(HttpServletResponse response ,@RequestParam()Integer authorId ) throws Exception {
+    public void exportWithAuthorId(HttpServletResponse response,@RequestParam() Integer authorId) throws Exception {
        List<Article> articleList = articleService.findAllArticlesWithAuthorId(authorId);
-
+       //打印全部数据
+        log.info("查询到的数据为:{}",articleList);
         //在内存操作，写出到浏览器
         ExcelWriter writer = ExcelUtil.getWriter(true);
         //自定义标题别名
@@ -126,7 +134,7 @@ public class ArticleController {
         writer.addHeaderAlias("viewCount","浏览量");
         writer.addHeaderAlias("categoryId","文章分类");
         writer.addHeaderAlias("categoryName","分类名");
-        writer.addHeaderAlias("comment_count","评论数");
+        writer.addHeaderAlias("commentCount","评论数");
         //默认的，未添加alias的属性也会写出，如果想只写出加了别名的字段，可以调用此方法排除之
         writer.setOnlyAlias(true);
 
@@ -144,7 +152,43 @@ public class ArticleController {
         writer.close();
         out.close();
     }
+    @AuthAccess
+    @GetMapping("/exportAll")
+    public void exportAll(HttpServletResponse response) throws Exception {
+        List<Article> articleList = articleService.findArticlesAll();
+        //打印全部数据
+        log.info("查询到的数据为:{}",articleList);
+        //在内存操作，写出到浏览器
+        ExcelWriter writer = ExcelUtil.getWriter(true);
+        //自定义标题别名
+        writer.addHeaderAlias("title", "文章标题");
+        writer.addHeaderAlias("img", "文章封面");
+        writer.addHeaderAlias("description", "文章描述");
+        writer.addHeaderAlias("content", "内容");
+        writer.addHeaderAlias("time", "发布时间");
+        writer.addHeaderAlias("authorId", "作者id");
+        writer.addHeaderAlias("author","作者名");
+        writer.addHeaderAlias("viewCount","浏览量");
+        writer.addHeaderAlias("categoryId","文章分类");
+        writer.addHeaderAlias("categoryName","分类名");
+        writer.addHeaderAlias("commentCount","评论数");
+        //默认的，未添加alias的属性也会写出，如果想只写出加了别名的字段，可以调用此方法排除之
+        writer.setOnlyAlias(true);
 
+        //一次性写出list内的对象到excel，使用默认样式，强制输出标题
+        writer.write(articleList, true);
+
+        //设置浏览器响应格式
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset = UTF-8");
+        //设置文件名
+        String fileName = URLEncoder.encode("文章信息", StandardCharsets.UTF_8) ;  //中文文件名需要进行URL编码
+        response.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+
+        ServletOutputStream out = response.getOutputStream();
+        writer.flush(out, true);
+        writer.close();
+        out.close();
+    }
     @AuthAccess
     @GetMapping("/exportWithAuthor")
     public void exportWithAuthor(HttpServletResponse response) throws Exception {
@@ -186,28 +230,27 @@ public class ArticleController {
     @AuthAccess
     @PostMapping("/batchInsert")
     public Result batchInsert(MultipartFile file) throws Exception {
-        //拿到输入流构建reader
+        // 拿到输入流构建 reader
         InputStream inputStream = file.getInputStream();
         ExcelReader reader = ExcelUtil.getReader(inputStream);
-        System.out.println("开始读取");
-        //读取数据
+
+        // 读取数据
         reader.addHeaderAlias("文章标题", "title");
         reader.addHeaderAlias("文章封面", "img");
         reader.addHeaderAlias("文章描述", "description");
+        reader.addHeaderAlias("内容", "content");
+        reader.addHeaderAlias("发布时间", "time");
+        reader.addHeaderAlias("作者id", "authorId");
         reader.addHeaderAlias("文章分类", "categoryId");
         reader.addHeaderAlias("分类名", "categoryName");
-        reader.addHeaderAlias("内容", "content");
-        reader.addHeaderAlias("作者id", "authorId");
-        reader.addHeaderAlias("发布时间", "time");
-
+        reader.addHeaderAlias("浏览量", "viewCount");
 
 
         List<Article> articleList = reader.readAll(Article.class);
 
-
-        //批量插入
+        // 批量插入
         for (Article article : articleList) {
-//            article.setAuthorId(authorId);
+            article.setAuthorId(article.getAuthorId()); // 设置当前用户的 ID
             articleService.addArticle(article);
         }
         return Result.success();

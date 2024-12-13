@@ -35,6 +35,9 @@
         <div style="text-decoration: none; color: #666; font-size: 14px; margin-bottom: 20px;">
           <el-button type="info" @click="clearForgetPasswordForm">忘记密码?</el-button>
         </div>
+        <div style="margin-bottom: 20px;">
+          <el-button type="success" @click="goHome" style="width: 100%;">返回首页</el-button>
+        </div>
       </div>
     </div>
     <el-dialog title="忘记密码" v-model="data.formForgetPasswordVisible" width="50%" :close-on-click-modal="false" destroy-on-close>
@@ -156,6 +159,10 @@ const handleForgetPassword = () => {
   });
 }
 
+// 新增返回首页的方法
+function goHome() {
+  router.push('/');
+}
 
 </script>
 

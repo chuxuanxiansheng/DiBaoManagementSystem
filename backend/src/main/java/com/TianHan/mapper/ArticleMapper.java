@@ -14,6 +14,7 @@ public interface ArticleMapper {
      * 查询所有文章（带条件）
      */
     List<Article> queryAll(Article article);
+    List<Article> queryAllp(Article article);
 
     /**
      * 根据ID查询文章
@@ -23,15 +24,16 @@ public interface ArticleMapper {
     /**
      * 查询所有文章（带条件）
      */
-    List<Article> selectAll(Article article);
+    List<Article> selectAll();
 
-<<<<<<<<< Temporary merge branch 1
-    Integer getArticleCountByDate(String dateStr);
+//
+//    Integer getArticleCountByDate(String dateStr);
 
-    List<Article> selectAllWithAuthorId();
+    List<Article> selectAllWithAuthorId(Integer authorId);
+    List<Article>selectAllW();
 
     List<Article> selectAllWithAuthor();
-=========
+
     /**
      * 更新文章
      */
@@ -61,5 +63,6 @@ public interface ArticleMapper {
      * 增加文章浏览量
      */
     void incrementViewCount(@Param("id") Integer id);
->>>>>>>>> Temporary merge branch 2
+
+
 }

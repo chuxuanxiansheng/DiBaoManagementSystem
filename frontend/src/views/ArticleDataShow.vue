@@ -13,12 +13,11 @@
       <el-button type="danger" @click="handleBatchDelete">
         <Delete />批量删除
       </el-button>
-      <el-upload name="file" accept=".xls,.xlsx"  v-if="data.user.status==='管理员'"
-                 action=“http://localhost:8080/article/batchInsert” :show-file-list="false" :on-success="batchInsertSuccess">
+      <el-upload name="file" accept=".xls,.xlsx" action="http://localhost:8080/article/batchInsert" :show-file-list="false" :on-success="batchInsertSuccess">
         <el-button type="info">导入</el-button>
         <div style="margin: 10px;">请选择要导入的Excel文件</div>
       </el-upload>
-      <el-button  v-if="data.user.status==='管理员'" type="success" @click="handleExportClick">导出</el-button>
+      <el-button type="success" @click="handleExportClick">导出</el-button>
     </div>
   </div>
   <div class="card" style="margin: 5px;">
