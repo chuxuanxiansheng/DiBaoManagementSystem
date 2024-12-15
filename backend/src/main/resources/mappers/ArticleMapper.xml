@@ -29,31 +29,12 @@
         </where>
         ORDER BY a.id DESC
     </select>
-    <select id="queryAllp" resultType="com.TianHan.pojo.Article">
-        SELECT
-        a.id, a.title, a.img, a.description, a.content, a.category_id,
-        a.view_count,
-        (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as commentCount,
-        a.time, a.author_id,
-        u.username as author,
-        c.name as categoryName
-        FROM articles a
-        LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
-        <where>
-
-            <if test="title != null and title != ''">
-                AND a.title LIKE CONCAT('%', #{title}, '%')
-            </if>
-        </where>
-        ORDER BY a.id DESC
-    </select>
 
     <select id="queryAll" resultType="com.TianHan.pojo.Article">
         SELECT 
             a.id, a.title, a.img, a.description, a.content, a.category_id,
             a.view_count, 
-            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as commentCount,
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) as comment_count,
             a.time, a.author_id,
             u.username as author,
             c.name as categoryName
@@ -61,9 +42,6 @@
         LEFT JOIN users u ON a.author_id = u.uid
         LEFT JOIN categories c ON a.category_id = c.sort
         <where>
-            <if test="authorId != null or authorId != 0 " >
-                AND a.author_id = #{authorId}
-            </if>
             <if test="title != null and title != ''">
                 AND a.title LIKE CONCAT('%', #{title}, '%')
             </if>
@@ -91,13 +69,11 @@
             a.img, 
             a.description, 
             a.view_count, 
-             (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS commentCount,
+            (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS comment_count, 
             a.content, 
-            a.time,
-        c.name as categoryName
+            a.time 
         FROM articles a
         LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
         WHERE a.author_id = #{authorId}
     </select>
 
@@ -112,11 +88,9 @@
             a.view_count, 
             (SELECT COUNT(*) FROM comments c WHERE c.article_id = a.id) AS comment_count, 
             a.content, 
-            a.time,
-        c.name as categoryName
+            a.time 
         FROM articles a
         LEFT JOIN users u ON a.author_id = u.uid
-        LEFT JOIN categories c ON a.category_id = c.sort
     </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO articles (
@@ -126,7 +100,7 @@
         ) VALUES (
             #{title}, #{img}, #{description}, #{content}, 
             #{categoryId}, #{time}, #{authorId},
-            #{viewCount}, 0
+            0, 0
         )
     </insert>
 

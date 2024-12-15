@@ -10,9 +10,7 @@
       <el-col :span="12" style="margin-bottom: 10px">
         <div class="card" style="padding: 20px; height: 400px;" id="pie"></div>
       </el-col>
-      <el-col :span="12" style="margin-bottom: 10px">
-        <div class="card" style="padding: 20px; height: 400px;" id="articleStats"></div>
-      </el-col>
+
     </el-row>
   </div>
 </template>
@@ -101,37 +99,6 @@ const pieOption = {
   ]
 };
 
-const articleStatsOption = {
-  title: {
-    text: '我的文章统计'
-  },
-  tooltip: {},
-  legend: {
-    data: ['阅读量', '评论数']
-  },
-  xAxis: {
-    data: []
-  },
-  yAxis: {},
-  series: [
-    {
-      name: '阅读量',
-      type: 'bar',
-      data: [],
-      itemStyle: {
-        color: '#409eff'
-      }
-    },
-    {
-      name: '评论数',
-      type: 'bar',
-      data: [],
-      itemStyle: {
-        color: '#67c23a'
-      }
-    }
-  ]
-};
 
 const data = reactive({});
 
@@ -157,23 +124,7 @@ onMounted(() => {
     pieChart.setOption(pieOption);
   });
 
-  // 模拟数据
-  const simulatedData = {
-    titles: ['文章1', '文章2', '文章3', '文章4', '文章5'],
-  const articleStatsChart = echarts.init(document.getElementById('articleStats'));
-  service.get('/getArticleStats').then(res => {
-    articleStatsOption.xAxis.data = res.data.titles;
-    articleStatsOption.series[0].data = res.data.readCounts;
-    articleStatsOption.series[1].data = res.data.commentCounts;
-    articleStatsChart.setOption(articleStatsOption);
-  });
 });
-
-
-
-
-
-
 </script>
 
 <style scoped></style>
